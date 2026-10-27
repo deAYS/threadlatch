@@ -5,7 +5,8 @@ export function proposeDiff(current: Revision, batch: ProposalBatch) {
     const blocked =
       batch.baseRevisionId !== current.id
         ? 'Stale revision'
-        : before?.pinned || (before?.origin === 'manual' && change.operation === 'supersede')
+        : change.operation !== 'conflict' &&
+            (before?.pinned || (before?.origin === 'manual' && change.operation === 'supersede'))
           ? 'Manual review required'
           : null;
     return { ...change, before, blocked, selectable: !blocked && change.operation !== 'conflict' };

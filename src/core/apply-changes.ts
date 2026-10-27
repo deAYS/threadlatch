@@ -110,6 +110,6 @@ export function resolveConflict(current: Revision, conflictId: string, note: str
   if (!conflict || conflict.resolved) throw new Error('Unknown or already resolved conflict.');
   next.actor = 'manual';
   conflict.resolved = true;
-  conflict.note += '\nManual reconciliation: ' + note.trim();
+  conflict.reconciliation = note.trim();
   return next;
 }

@@ -42,7 +42,7 @@ npx --no-install playwright install chromium
 npm run test:e2e
 ```
 
-Windows/Node 22 paket döngüsü ve gerçek Chromium akışları yerelde sınandı. Kayıt, reload, düzeltme, yedek, geçmiş, iki sekme yarışı, kota hatası, EN/TR, mobil düzen ve erişilebilirlik testleri var. Linux/macOS CI çalışması, tam sağlayıcı eval'leri ve beş ilk kullanıcı denemesi bekliyor. Otomatik kaynak testleri modelin anlamı doğru çıkardığını kanıtlamaz. [Güncel sonuçlar](docs/evaluations/compatibility.md).
+Windows/Node 22 paket döngüsü ve gerçek Chromium akışları yerelde sınandı. Kayıt, reload, düzeltme, yedek, geçmiş, iki sekme yarışı, kota hatası, EN/TR, mobil düzen ve erişilebilirlik testleri var. Linux/macOS kontrolleri CI üzerinde çalışır; tam sağlayıcı eval'leri ve beş ilk kullanıcı denemesi bekliyor. Otomatik kaynak testleri modelin anlamı doğru çıkardığını kanıtlamaz. [Güncel sonuçlar](docs/evaluations/compatibility.md).
 
 Bellek .threadlatch/ veya IndexedDB'de **şifresiz** saklanır. Yedek ya da cihazlar arası sync değildir. Tarayıcı verisini temizlemeden/origin değiştirmeden JSON aktar. Alıntı eşleşmesi anlam doğruluğu demek değildir. Örnek, asistan önerisi, varsayım ve belirsiz onay kendiliğinden kullanıcı kararına dönüşmez. Elle düzenleme açıkça işaretlenir; eski kaynak yeni metni doğrulamaz.
 

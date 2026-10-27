@@ -49,7 +49,7 @@ npx --no-install playwright install chromium
 npm run test:e2e
 ```
 
-Windows/Node 22 package tests and real Chromium tests run locally. Linux/macOS checks are configured in CI; execution is pending. Tests cover source matching, examples/suggestions, stale revisions, replay, branches, immutable history, locks, symlinks, package assets, install/removal preservation, Unicode paths, reload/backup/restore, two-tab races, quota rollback, EN/TR, mobile layout and accessibility. Model accuracy is evaluated separately. [Exact results and pending gates](docs/evaluations/compatibility.md).
+Windows/Node 22 package tests and real Chromium tests run locally. Linux/macOS checks run in CI; see the compatibility evidence and current PR checks for exact results. Tests cover source matching, examples/suggestions, stale revisions, replay, branches, immutable history, locks, symlinks, package assets, install/removal preservation, Unicode paths, reload/backup/restore, two-tab races, quota rollback, EN/TR, mobile layout and accessibility. Model accuracy is evaluated separately. [Exact results and pending gates](docs/evaluations/compatibility.md).
 
 ## Data boundaries
 

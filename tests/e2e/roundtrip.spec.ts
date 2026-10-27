@@ -74,6 +74,7 @@ test('source → analysis → review → save → reload → correction → back
   expect(backupPath).toBeTruthy();
   await page.getByRole('button', { name: 'Delete project', exact: true }).click();
   await page.getByRole('button', { name: 'Delete permanently', exact: true }).click();
+  await expect(page.getByLabel('Project name')).toBeVisible();
   await page.getByLabel('Import JSON backup').setInputFiles(backupPath!);
   await expect(page.getByTestId('memory-item')).toContainText('Use PostgreSQL.');
 });

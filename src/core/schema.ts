@@ -43,6 +43,7 @@ export const ConflictSchema = z.strictObject({
   evidence: list(EvidenceSchema),
   note: z.string().max(4000),
   resolved: z.boolean(),
+  reconciliation: z.string().min(1).max(2000).optional(),
 });
 export const RevisionSchema = z.strictObject({
   id: Id,

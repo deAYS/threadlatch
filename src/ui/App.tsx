@@ -22,6 +22,7 @@ import { proposeDiff } from '../core/propose-diff.js';
 import { manualEdit, restoreSnapshot, resolveConflict } from '../core/apply-changes.js';
 import { buildHandoff } from '../export/handoff.js';
 import { dictionaries, type Language, type TranslationKey } from '../i18n/index.js';
+import { createOperationQueue } from './operation-queue.js';
 const repo = new BrowserProjectRepository();
 type View = 'memory' | 'review' | 'sources' | 'export' | 'import';
 function download(name: string, text: string, type: string) {
@@ -114,6 +115,8 @@ export function App() {
     [memoryScope, setMemoryScope] = useState<string[] | null>(null);
   const [handoffScope, setHandoffScope] = useState<string[] | null>(null);
   const dialog = useRef<HTMLDialogElement>(null);
+  const [enqueue] = useState(() => createOperationQueue());
+  const pendingOperations = useRef(0);
   const revision = archive ? currentRevision(archive) : null;
   const request = archive?.requests.find((r) => r.requestId === requestId),
     batch = archive?.proposals.find((b) => b.requestId === requestId);
@@ -148,16 +151,20 @@ export function App() {
     else setArchive(null);
   }
   async function perform(work: () => Promise<void>) {
+    pendingOperations.current++;
     setBusy(true);
-    setError('');
-    setNotice('');
-    try {
-      await work();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Operation failed.');
-    } finally {
-      setBusy(false);
-    }
+    await enqueue(async () => {
+      setError('');
+      setNotice('');
+      try {
+        await work();
+      } catch (e) {
+        setError(e instanceof Error ? e.message : 'Operation failed.');
+      } finally {
+        pendingOperations.current--;
+        if (!pendingOperations.current) setBusy(false);
+      }
+    });
   }
   async function commit(next: ProjectArchive) {
     if (!archive) return;
@@ -167,9 +174,7 @@ export function App() {
     setNotice(t('saved'));
   }
   useEffect(() => {
-    void refresh().catch(() =>
-      setError('Local storage could not be opened. Check browser storage permissions.'),
-    );
+    void perform(() => refresh());
   }, []);
   useEffect(() => {
     document.documentElement.lang = language;
@@ -387,6 +392,7 @@ export function App() {
                 {t('importBackup')}
                 <input
                   type="file"
+                  disabled={busy}
                   accept=".json,application/json"
                   aria-label={t('importBackup')}
                   onChange={(e) => void importBackup(e.target.files?.[0])}
@@ -587,6 +593,7 @@ export function App() {
                   {t('sourceFile')}
                   <input
                     type="file"
+                    disabled={busy}
                     accept=".txt,.md,text/plain,text/markdown"
                     aria-label={t('sourceFile')}
                     onChange={(e) => {
@@ -1044,6 +1051,7 @@ export function App() {
                     {t('importBackup')}
                     <input
                       type="file"
+                      disabled={busy}
                       accept=".json,application/json"
                       aria-label={t('importBackup')}
                       onChange={(e) => void importBackup(e.target.files?.[0])}
