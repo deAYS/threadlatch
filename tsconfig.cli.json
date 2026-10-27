@@ -1,0 +1,6 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": { "noEmit": false, "outDir": "dist-cli", "rootDir": "src", "declaration": true },
+  "include": ["src/cli/**/*.ts", "src/agents/**/*.ts", "src/core/**/*.ts", "src/analysis/**/*.ts", "src/import/**/*.ts", "src/export/**/*.ts", "src/storage/file-projects.ts"],
+  "exclude": ["src/**/*.tsx", "tests"]
+}
