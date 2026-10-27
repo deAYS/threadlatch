@@ -1,0 +1,199 @@
+{
+  "schemaVersion": 1,
+  "project": {
+    "id": "93f9f6c2-5f8a-4b2c-8015-db65b9d1679a",
+    "title": "Synthetic fieldnotes",
+    "currentRevisionId": "e35f53dd-a47f-4872-aaaf-3d9b9ebdbae2",
+    "generation": 0
+  },
+  "conversations": [
+    {
+      "id": "d7b7aede-721f-49c2-9b08-8aa8f44095a2",
+      "projectId": "93f9f6c2-5f8a-4b2c-8015-db65b9d1679a",
+      "parentRevisionId": "a41716d4-fcbc-42a8-8c64-892ca067fe37",
+      "title": "Conversation",
+      "importFingerprint": "78d473aa42916c99d5b585eb5b5eb74c763e90afde1cd42f1e6e382132a69e4f",
+      "messages": [
+        {
+          "role": "user",
+          "text": "Store project memory locally.",
+          "id": "509430fe-7699-4f21-ad49-0a9a0d85c37a",
+          "conversationId": "d7b7aede-721f-49c2-9b08-8aa8f44095a2",
+          "ordinal": 0
+        },
+        {
+          "role": "assistant",
+          "text": "We could add cloud sync later.",
+          "id": "6eda0bc2-4fb3-469f-a13f-a0dead480c2a",
+          "conversationId": "d7b7aede-721f-49c2-9b08-8aa8f44095a2",
+          "ordinal": 1
+        }
+      ]
+    }
+  ],
+  "revisions": [
+    {
+      "id": "a41716d4-fcbc-42a8-8c64-892ca067fe37",
+      "parentRevisionId": null,
+      "projectId": "93f9f6c2-5f8a-4b2c-8015-db65b9d1679a",
+      "items": [],
+      "conflicts": [],
+      "appliedProposalIds": [],
+      "createdAt": "2026-10-27T06:59:05.223Z",
+      "actor": "manual"
+    },
+    {
+      "id": "e35f53dd-a47f-4872-aaaf-3d9b9ebdbae2",
+      "parentRevisionId": "a41716d4-fcbc-42a8-8c64-892ca067fe37",
+      "projectId": "93f9f6c2-5f8a-4b2c-8015-db65b9d1679a",
+      "items": [
+        {
+          "kind": "constraint",
+          "text": "Store project memory locally.",
+          "status": "active",
+          "origin": "user_statement",
+          "id": "d5ba4965-89a8-4a97-9bcd-7d964a1eb143",
+          "evidence": [
+            {
+              "messageId": "509430fe-7699-4f21-ad49-0a9a0d85c37a",
+              "quote": "Store project memory locally."
+            }
+          ],
+          "supersedesItemId": null,
+          "pinned": false
+        },
+        {
+          "kind": "context",
+          "text": "Cloud sync is an unaccepted suggestion.",
+          "status": "proposed",
+          "origin": "assistant_suggestion",
+          "id": "c59a4527-6605-4f4e-b804-6cad5ef1ae50",
+          "evidence": [
+            {
+              "messageId": "6eda0bc2-4fb3-469f-a13f-a0dead480c2a",
+              "quote": "We could add cloud sync later."
+            }
+          ],
+          "supersedesItemId": null,
+          "pinned": false
+        }
+      ],
+      "conflicts": [],
+      "appliedProposalIds": [
+        "1a0e7226-3a0c-4d9c-9a70-903c0f9d8d7a:8fd69c79-226c-4f76-9562-8179426266ec",
+        "1a0e7226-3a0c-4d9c-9a70-903c0f9d8d7a:d4f4fb0b-4261-4605-a84a-39972c68302f"
+      ],
+      "createdAt": "2026-10-27T06:59:05.232Z",
+      "actor": "reviewed_ai"
+    }
+  ],
+  "requests": [
+    {
+      "schemaVersion": 1,
+      "requestId": "1a0e7226-3a0c-4d9c-9a70-903c0f9d8d7a",
+      "projectId": "93f9f6c2-5f8a-4b2c-8015-db65b9d1679a",
+      "baseRevisionId": "a41716d4-fcbc-42a8-8c64-892ca067fe37",
+      "sourceRevisionIds": [
+        "a41716d4-fcbc-42a8-8c64-892ca067fe37"
+      ],
+      "selectedMessages": [
+        {
+          "role": "user",
+          "text": "Store project memory locally.",
+          "id": "509430fe-7699-4f21-ad49-0a9a0d85c37a",
+          "conversationId": "d7b7aede-721f-49c2-9b08-8aa8f44095a2",
+          "ordinal": 0
+        },
+        {
+          "role": "assistant",
+          "text": "We could add cloud sync later.",
+          "id": "6eda0bc2-4fb3-469f-a13f-a0dead480c2a",
+          "conversationId": "d7b7aede-721f-49c2-9b08-8aa8f44095a2",
+          "ordinal": 1
+        }
+      ],
+      "currentItems": [],
+      "omittedItemIds": [],
+      "excludedHistoryCount": 0,
+      "proposalIds": [
+        "8fd69c79-226c-4f76-9562-8179426266ec",
+        "d4f4fb0b-4261-4605-a84a-39972c68302f",
+        "eba0e4b8-da99-4635-be65-82fd04865e75",
+        "53426a0b-2fa7-4300-90b9-c27d2e76f4b2",
+        "226ace62-af90-45ed-a2eb-9d6ba012287b",
+        "2c6ff1dc-eb7b-4b13-aa77-e30ff05ff1e6",
+        "2f3057c6-41ff-460e-8d2e-fef656ca39ed",
+        "04757fbf-b687-4f08-ba29-30ff8eb3b9ff",
+        "375598b4-1833-42fd-a534-09f0e72f510a",
+        "a63cb332-48e8-4344-b7f3-bb93e6650c75",
+        "cb47443e-d115-40c2-a825-9129ba0652c4",
+        "6f9034f9-21d7-4450-8cf1-f41ad3b43c23",
+        "0ae0c20b-1e17-4f0f-9d7e-8caf74132a7c",
+        "d4b59c66-4acb-4ba0-abcd-5ed3f16e0bd1",
+        "caa1c31a-46a5-41c7-aa73-7bab60602f18",
+        "18c662cb-5a1b-44e6-82d1-733a1494d84d",
+        "62797b59-332b-407a-b754-9aa2f2e7554c",
+        "d993c41a-b9c6-4fe8-b53d-3a0fa533baf0",
+        "32e1a532-3af0-4f14-849b-e9ec57b4b55f",
+        "1cd4fbd7-1537-4500-83e1-c88944dcc5c3",
+        "590223ce-f6c7-47a0-bbcf-7044d7d4f4c2",
+        "64978453-4042-4e76-8859-009fd82a6914",
+        "86aea771-a314-4075-9bc6-d39118f66397",
+        "21ae1191-89d9-4065-99e6-0c752e12f3c6",
+        "1343d0ea-67dc-45a9-b2b8-10804d1916a3",
+        "0adb7a26-8a45-4371-86b0-168b190f8f4b",
+        "cd884a93-7f72-435f-a61f-fc8c7be4febd",
+        "03b92804-c621-484b-96b4-1856b54187e9",
+        "00bc2244-08a5-474e-a8c7-5c19014e1282",
+        "96e8445b-c777-4f0b-aed4-ad183692eded",
+        "205a298f-2ef3-427f-8f34-b2795cb2e415",
+        "d7a1512c-90a3-4c20-a0e4-7f766dcda77d"
+      ]
+    }
+  ],
+  "proposals": [
+    {
+      "schemaVersion": 1,
+      "requestId": "1a0e7226-3a0c-4d9c-9a70-903c0f9d8d7a",
+      "baseRevisionId": "a41716d4-fcbc-42a8-8c64-892ca067fe37",
+      "changes": [
+        {
+          "proposalId": "8fd69c79-226c-4f76-9562-8179426266ec",
+          "operation": "add",
+          "targetItemId": null,
+          "item": {
+            "kind": "constraint",
+            "text": "Store project memory locally.",
+            "status": "active",
+            "origin": "user_statement"
+          },
+          "evidence": [
+            {
+              "messageId": "509430fe-7699-4f21-ad49-0a9a0d85c37a",
+              "quote": "Store project memory locally."
+            }
+          ],
+          "note": ""
+        },
+        {
+          "proposalId": "d4f4fb0b-4261-4605-a84a-39972c68302f",
+          "operation": "add",
+          "targetItemId": null,
+          "item": {
+            "kind": "context",
+            "text": "Cloud sync is an unaccepted suggestion.",
+            "status": "proposed",
+            "origin": "assistant_suggestion"
+          },
+          "evidence": [
+            {
+              "messageId": "6eda0bc2-4fb3-469f-a13f-a0dead480c2a",
+              "quote": "We could add cloud sync later."
+            }
+          ],
+          "note": ""
+        }
+      ]
+    }
+  ]
+}
