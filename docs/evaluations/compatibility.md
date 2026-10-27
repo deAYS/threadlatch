@@ -19,7 +19,7 @@ Remote [CI run 40465377568](https://github.com/deAYS/threadlatch/actions/runs/40
 | Tool | Actual observation | Status |
 | --- | --- | --- |
 | Codex CLI 0.164.0-alpha.11.1, authenticated ChatGPT session | Project-local skill explicitly discovered/read. First synthetic write attempt stopped under Node 24; no archive changes. A second attempt using the supplied Node 22.23.4 executable was denied by the test host's execution sandbox before CLI startup (“Access is denied”). | Partial discovery/error-path check only; successful request/import/apply/new-session handoff **pending** |
-| Claude Code 2.1.308 | Official stable native installation completed on Windows; `--version` and `doctor` passed with no installation issues. Account sign-in is not complete. | Installation verified; real discovery, explicit invocation, natural selection, save/correction and handoff **pending** |
+| Claude Code 2.1.308 | Official stable native installation completed on Windows; `--version` and `doctor` passed with no installation issues. Subscription login requires eligible account access, which is unavailable for this test session. | Installation verified; real discovery, explicit invocation, natural selection, save/correction and handoff **deferred pending eligible account access** |
 | ChatGPT | No real 30-scenario extraction run performed. | Not yet tested |
 | Claude | No real extraction run performed. | Not yet tested |
 | Muse | Target product still needs confirmation. | Not yet tested |
@@ -27,7 +27,7 @@ Remote [CI run 40465377568](https://github.com/deAYS/threadlatch/actions/runs/40
 
 The Codex run used its existing authenticated default model configuration; model identity was not captured as a controlled evaluation variable. It is not a completed model evaluation. The sandbox was not weakened and no global runtime/permission settings were changed to obtain a pass.
 
-A subsequent user-scope Node.js 22.23.4 installation was verified against the official archive checksum. With that runtime selected for the process, ThreadLatch setup for both agent destinations and all doctor checks passed in a fresh synthetic project. The existing Node 24 installation was preserved. This is a CLI installation check, not a successful model-driven memory cycle or a rerun of the blocked Codex host test.
+A subsequent user-scope Node.js 22.23.4 installation was verified against the official archive checksum. With that runtime selected for the process, ThreadLatch setup for both agent destinations and all doctor checks passed in a fresh synthetic project. The existing Node 24 installation was preserved. A fresh Codex CLI test using this installed runtime and the real npm tarball again failed at process launch under the workspace-write sandbox: both version and doctor commands returned “Access is denied”. Request/import/apply were not run and canonical memory was unchanged. Direct CLI installation checks therefore passed, while the model-driven memory cycle remains blocked. No permission settings were weakened to obtain a pass.
 
 ## Gates still pending
 
