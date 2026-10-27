@@ -9,4 +9,4 @@
 - Optional English/Turkish browser review with IndexedDB, history restore, explicit archive exchange and a synthetic example.
 - Automated core/process/package/Chromium checks and a three-platform CI definition. Existing manual Pages deployment preserved.
 
-This is source preview work, not a published npm or stable release. Provider extraction evaluations, real host end-to-end compatibility, cross-platform CI execution and first-user trials remain pending. See [evidence](docs/evaluations/compatibility.md).
+This is source preview work, not a published npm or stable release. Provider extraction evaluations, real host end-to-end compatibility, first-user trials and manual UX sign-off remain pending. See [evidence](docs/evaluations/compatibility.md).

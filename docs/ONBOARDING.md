@@ -49,4 +49,4 @@ Run the web app locally and open the synthetic example. Paste a source, preview 
 
 ## Release gates still open
 
-Linux/macOS CI execution, complete Codex/Claude Code discovery and new-session trials, 30-scenario × 3 provider evaluations, inter-provider handoff, five first-time participants (target four successful cycles within five minutes), and manual accessibility/UX sign-off. Only actual evidence may close these gates. Do not advertise universal automatic skill selection or successful installation on an untested platform.
+Complete Codex/Claude Code discovery and new-session trials, 30-scenario × 3 provider evaluations, inter-provider handoff, five first-time participants (target four successful cycles within five minutes), and manual accessibility/UX sign-off. Only actual evidence may close these gates. Do not advertise universal automatic skill selection or successful installation on an untested platform.

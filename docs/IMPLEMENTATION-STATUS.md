@@ -11,9 +11,9 @@ Date: 2026-10-27. Version: 0.1.0-preview.1, unreleased. This is an implementatio
 | 5 — Persistence/history | IndexedDB and local file adapters, CAS generation/revision checks, immutable history, atomic replacement, locks, full archive validation/remapping | Unit/process tests; real browser two-tab and quota rollback; corrupted backup rejection |
 | 6 — Handoff/EN/TR | Bounded escaped Markdown, explicit omissions/errors, JSON backup, EN/TR browser UI and clipboard fallback | Export/i18n tests, real browser English/Turkish workflows and responsive/axe checks |
 | 7 — Node CLI | init/status/request/import/apply/export, history/edit/restore, private pending files, instruction hints, separate CLI build | Spawned Node process round-trip/race; actual host write flow remains blocked/pending |
-| 8 — Skills/onboarding | One canonical skill, two project destinations, setup/doctor/install/update/uninstall, owned digests and preservation | Local package installation/lifecycle verified on Windows; real host and cross-platform gates remain |
+| 8 — Skills/onboarding | One canonical skill, two project destinations, setup/doctor/install/update/uninstall, owned digests and preservation | Package installation/lifecycle verified on Windows, Ubuntu and macOS CI; real host gates remain |
 | 9 — Validation | Automated core/process/package tests and production-build Chromium E2E | Provider 30 × 3 evaluations, first-user trials, inter-provider handoff and manual UX sign-off remain open |
-| 10 — Public release | EN/TR docs, protocol, contribution/security guidance, synthetic demo and CI definition | Remote CI, verified private reporting channel, stable release and application publication remain open; manual Pages workflow unchanged |
+| 10 — Public release | EN/TR docs, protocol, contribution/security guidance, synthetic demo and CI definition | Three-platform CI passed; private reporting channel, stable release and application publication remain open; manual Pages workflow unchanged |
 
 ## Technical decisions
 

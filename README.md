@@ -11,7 +11,7 @@
 Use **Node.js 22.x, at least 22.12.0**, and npm. No ThreadLatch account or extra provider API key is required.
 
 ```sh
-git clone https://github.com/deAYS/threadlatch.git
+git clone --branch codex/implement-v1 https://github.com/deAYS/threadlatch.git
 cd threadlatch
 npm ci
 npm run build:cli

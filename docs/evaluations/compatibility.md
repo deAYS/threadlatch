@@ -10,7 +10,7 @@ Production Vite build served at /threadlatch/: English source → request → fi
 
 The actual npm tarball was installed into an isolated local prefix on Windows/Node 22. Setup for both agents, repeat setup, doctor, instruction preservation, package asset allowlist and uninstall-with-memory-preserved passed. Package name lookup returned 404 on 2026-10-27; no name reservation, registry publication or trademark right is claimed.
 
-Linux/macOS jobs are defined in CI. They have **not run remotely** in this implementation environment. A workflow definition is not a passing result. Only Chromium was executed locally; other browser engines and manual accessibility sign-off remain pending.
+Remote [CI run 40465377568](https://github.com/deAYS/threadlatch/actions/runs/40465377568) passed at commit 05c1963644806cee44517a9959c75ebb29000a21: clean install, typecheck, lint, 79 unit/integration tests, build and installed-package lifecycle on Ubuntu, Windows and macOS. All 8 Chromium E2E tests also passed on Ubuntu; local Windows Chromium passed separately. Other browser engines and manual accessibility sign-off remain pending.
 
 ## Real agent/provider checks
 
@@ -31,7 +31,7 @@ The Codex run used its existing authenticated default model configuration; model
 - Real Codex/Claude Code successful memory cycle, natural and explicit selection, correction, one batch save and new-session continuation, with controlled version/model details.
 - Handoff between at least two actual AI tools without reviving cancelled decisions.
 - Five first-time participants with supported runtime/agent; target four useful cycles within five minutes without coaching. No participants have been tested.
-- Linux/macOS package lifecycle CI, manual keyboard/assistive-technology review, and remaining UX sign-off.
+- Manual keyboard/assistive-technology review and remaining first-user UX sign-off.
 - Establish a private vulnerability reporting channel (GitHub reports it disabled as of 2026-10-27) and verify remote release/Pages settings before stable publication.
 
 Until these are resolved the release remains **preview**. No provider is advertised as fully tested, and no v0.1.0 stable tag or application deployment was performed.
