@@ -1,8 +1,6 @@
 # ThreadLatch Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
->
-> Bu proje için seçilen uygulama yöntemi: mevcut oturumda native execution. Kullanıcı ürün ve teknik kararları devretti. Bu belge planlama teslimidir; uygulama veya yayın işlemi henüz yapılmadı.
+> Teknik geliştirme planı. Uygulama ve CLI henüz yayınlanmadı; bu belgedeki hedef davranışlar tamamlanmış özellikler değildir. Public ürün özeti için `docs/ROADMAP.md` dosyasına bakın.
 
 **Goal:** AI sohbetlerindeki kararları, düzeltmeleri ve açık soruları kaynak mesajlarıyla saklayan; değişimleri gösteren ve farklı AI araçlarına taşınabilir güncel bağlam üreten açık kaynak bir uygulama.
 
@@ -12,7 +10,7 @@
 
 **Spec:** Bu belgenin “Ürün kararı ve kapsam” ile “Davranış ve veri sözleşmesi” bölümleri.
 
-**Tarih:** 2026-10-27. **Durum:** Uygulamaya hazır plan; uyumluluk testleri henüz yapılmadı. Repo henüz bağlanmadığından aşağıdaki tüm uygulama yolları önerilen yeni dosyalardır.
+**Tarih:** 2026-10-27. **Durum:** Tanıtım sayfası ve Pages altyapısı hazır; uygulama, CLI ve uyumluluk testleri henüz uygulanmadı. Görevlerde önerilen dosyaları oluşturmadan önce mevcut repository durumunu kontrol edin.
 
 ## Global Constraints
 
@@ -40,7 +38,7 @@
 
 ### Kime, hangi fayda?
 
-İlk hedef kullanıcı, bir işi Codex, Claude Code veya birden fazla sohbet/AI aracıyla yürüten bireysel üretici. Kullanıcı “hangi karar hâlâ geçerli, neden değişti ve bunu nerede söyledim?” sorularına cevap bulur. AI ise bütün sohbet geçmişi yerine güncel kararları ve çözümlenmemiş belirsizlikleri içeren bir aktarım paketi alır. 2026-10-27 kullanıcı düzeltmesi: ürün yalnızca tarayıcı için değildir; coding agent kullanımı ilk sürümün temel kapsamıdır.
+İlk hedef kullanıcı, bir işi Codex, Claude Code veya birden fazla sohbet/AI aracıyla yürüten bireysel üretici. Kullanıcı “hangi karar hâlâ geçerli, neden değişti ve bunu nerede söyledim?” sorularına cevap bulur. AI ise bütün sohbet geçmişi yerine güncel kararları ve çözümlenmemiş belirsizlikleri içeren bir aktarım paketi alır. Coding agent kullanımı ilk sürümün temel kapsamıdır; tarayıcı kullanımı zorunlu değildir.
 
 Konumlandırma: **“Track what changed in your AI conversations.”** GitHub description: **“Track decisions, corrections, and open questions across AI chats—with source-linked, portable memory.”**
 
@@ -53,8 +51,6 @@ Benzer bağlam taşıma ve sohbet hafızası ürünleri vardır. Farkımızın h
 | Ortak yerel çekirdek + CLI + statik inceleme arayüzü | Coding agent tarayıcı açmadan kullanır; sohbet araçları aynı dosyayı taşır; ek API anahtarı gerekmez | İki saklama adaptörü ve açık dosya taşıma gerekir; web sohbetinde kopyala/yapıştır kalır | v0.1 için seçildi |
 | Sunuculu, API anahtarlı analiz | Tek ekranda daha az adım | API maliyeti, anahtar saklama ve sunucu işletimi gerekir | v0.2 aday kapsamı |
 | Sohbet sayfasını okuyan tarayıcı eklentisi | Kaynak sohbeti daha kolay getirir | DOM değişimleri, platform ve mağaza bakımı, izinler | Temel fayda doğrulandıktan sonra |
-
-Bu seçimler kullanıcının devrettiği kararlar kapsamında planı hazırlayan ajanın tercihleridir; kullanıcının ayrı ayrı verdiği teknik talimatlar değildir.
 
 ### v0.1 kullanıcı akışı
 
@@ -244,6 +240,8 @@ Her görevde önce belirtilen davranışı yakalayan test yazılır, beklenen ne
 
 ### Task 9: Public GitHub hazırlığı ve v0.1 çıkışı
 
+**Mevcut durum:** Tanıtım sayfası, README'ler, MIT lisansı ve manuel Pages workflow'u hazırlanmıştır. Aşağıdaki kalan uygulama yayın işlerini mevcut dosyalarla birleştirin; tamamlanmış altyapıyı yeniden oluşturmayın.
+
 **Files — Create:** `README.md`, `README.tr.md`, `LICENSE`, `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, `CHANGELOG.md`, `.gitignore`, `.github/ISSUE_TEMPLATE/bug.yml`, `.github/ISSUE_TEMPLATE/feature.yml`, `.github/workflows/ci.yml`, `.github/workflows/pages.yml`, `docs/PRIVACY.md`, `docs/ROADMAP.md`, `public/demo-project.json`.
 
 **Interfaces:** Sürüm verilmiş kaynak kodu, statik demo ve açık destek matrisi. Demo yalnız sentetik proje verisi kullanır. Security contact için mevcut repo sahibinin güvenli bildirim kanalı doğrulanır; uydurma e-posta yazılmaz.
@@ -251,7 +249,7 @@ Her görevde önce belirtilen davranışı yakalayan test yazılır, beklenen ne
 - [ ] README: bir cümle değer önerisi, kısa demo, gerçek kopyala/yapıştır adımları, lokal kurulum, destek seviyesi, saklama/yedek bilgisi, sınırlamalar, lisans ve katkı rehberi. İngilizce ana belge, Türkçe karşılık.
 - [ ] Kurulum script'lerini ve CI'ı temiz checkout üzerinde sınanabilir hale getir. CI: `npm ci`, `npm run typecheck`, `npm run lint`, `npm run test`, `npm run build`, `npm run test:e2e`. Actions bağımlılıklarını doğrulanmış SHA'ya sabitle; PR workflow'unda en az izin, secrets yok.
 - [ ] Vite base path ve asset URL'lerini gerçek repo adına göre ayarla. GitHub Pages public statik demo için seçildi; bu uygulama ticari SaaS olursa farklı hosting seç. Tarayıcı path yenilemesini hash navigation veya tek route ile sorunsuz yap.
-- [ ] Deploy workflow'u varsayılan olarak manuel olsun. PR CI yayın yapmaz. Kullanıcının açıkça istediği public repo yayını kapsamındaki kaynak push'u, gerçek remote doğrulandıktan sonra yapılabilir; repo ayarı/secrets gerektiren bir engel varsa somut olarak raporlanır. Canlı demo için Pages kullanılabilirliği ayrıca kontrol edilir.
+- [ ] Deploy workflow'u varsayılan olarak manuel olsun. PR CI yayın yapmaz. Yayın öncesi hedef remote ve yayın kapsamını doğrula; eksik repository ayarı veya erişim bağımlılığını raporla. Canlı demo için Pages kullanılabilirliği ayrıca kontrol edilir.
 - [ ] Gerçek sohbet, secret, kişisel dosya ve makine yolu sızıntısı açısından commit kapsamını incele. Demo ekran kaydında sentetik veri kullan.
 - [ ] Yayın öncesi Definition of Done'u değerlendir. Etiket `v0.1.0`; release notes kapsamı, sınırlamaları ve sınanan provider'ları belirtir. Kodun public olması tek başına ürünün test edildiği anlamına gelmez.
 
@@ -275,13 +273,13 @@ Her görevde önce belirtilen davranışı yakalayan test yazılır, beklenen ne
 3. **v0.4 — otomatik ajan bağlantıları:** v0.1'deki dosya/CLI akışının üzerine, istemci uyumluluğu doğrulanınca MCP veya native hook ile kaynaklı bellek okuma ve öneri gönderme. Okuma/yazma yetkisi, proje kapsamı ve audit açık olur. MCP desteği bütün ürünlerde varmış gibi sunulmaz. Model belleği sessizce değiştiremez.
 4. **Daha sonra:** Şifreli yedek, cihazlar arası sync ve ekip özellikleri ancak gerçek taleple. Bunlar mevcut local storage'ın şifreli olduğu anlamına gelmez.
 
-Global tanıtım için ilk teslim İngilizce README, kısa sentetik demo ve gerçek uyumluluk tablosudur. Geri bildirim GitHub Issues/Discussions üzerinden gönüllü gelir; sohbet içeriği toplanmaz. Başkalarına mesaj, toplulukta duyuru ve sosyal medya paylaşımı ayrıca talimat olmadan yapılmaz.
+Global tanıtım için ilk teslim İngilizce README, kısa sentetik demo ve gerçek uyumluluk tablosudur. Geri bildirim GitHub Issues/Discussions üzerinden gönüllü gelir; sohbet içeriği toplanmaz.
 
 ## Şimdi bilinen bağımlılıklar ve belirsizlikler
 
 | Konu | Çözüm / durum |
 | --- | --- |
-| Repo URL'si | Kullanıcı oluşturuyor; bağlanınca gerçek remote ve repo talimatları okunacak. Bu belgede kaynak dosyası yaratılmadı. |
+| Repo URL'si | `https://github.com/deAYS/threadlatch`; geliştirmeye başlamadan önce en güncel varsayılan dal okunmalıdır. |
 | Muse'un hangi ürünü olduğu | Genel aktarımı etkilemez. Native adaptör öncesinde ürün kimliği doğrulanacak. |
 | API ve hosting maliyeti | v0.1 uygulaması API çağırmaz. Kullanıcının kullandığı AI servisinin şartları/limitleri devam eder. Statik hosting sınırları aşılırsa plan yeniden değerlendirilir. |
 | Ürün değeri | Özellikle manuel köprünün sürtünmesi henüz sınanmadı. Önce en küçük tam döngü, ardından entegrasyon yatırımı. |
@@ -304,8 +302,8 @@ Bu kaynaklar 2026-10-27 tarihinde incelendi. Aşağıdaki bilgiler tasarımın u
 
 ## Plan özdenetimi
 
-- Ürün kapsamı Görev 1–9'a dağıtıldı; core kontrat, kaynak doğrulama ve revision semantiği UI'dan önce gelir. Kullanıcının Codex/Claude Code düzeltmesi v0.1 CLI kapsamına ve devir belgelerine işlendi.
+- Ürün kapsamı Görev 1–9'a dağıtıldı; core kontrat, kaynak doğrulama ve revision semantiği UI'dan önce gelir. Codex/Claude Code için v0.1 CLI kapsamı entegrasyon belgesinde tanımlıdır.
 - Review Focus'taki beş risk ilgili test görevlerine bağlandı. Otomatik test, manuel UX kontrolü ve gerçek model eval'i ayrı tutuldu.
-- Tüm uygulama dosyaları yeni önerilen yollardır; var olmayan repo, script veya entegrasyon çalışıyormuş gibi gösterilmedi.
+- Uygulama dosyaları önerilen yollardır; tamamlanan tanıtım/yayın altyapısı ayrıca belirtilmiştir. Henüz uygulanmayan script veya entegrasyonların çalıştığı iddia edilmez.
 - Şema/proposal, revision, import, export ve storage arabirim adları görevler arasında tutarlıdır.
-- Kullanıcının düşünmek istemediği rutin kararlar bu planda alındı. Repo adresi, yetkili erişim ve gerçek provider test sonuçları dış durum bağımlılıkları olarak açık kaldı.
+- Gerçek provider erişimi ve uyumluluk testi sonuçları, uygulama sırasında doğrulanacak dış bağımlılıklardır.

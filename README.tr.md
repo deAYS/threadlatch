@@ -2,7 +2,7 @@
 
 **AI sohbetlerindeki kararları, düzeltmeleri ve açık soruları kaynaklarıyla takip et; güncel bağlamı yanında taşı.**
 
-[Proje sayfası](https://deays.github.io/threadlatch/) · [Uygulama planı](docs/superpowers/plans/2026-10-27-threadlatch.md) · [English](README.md)
+[Proje sayfası](https://deays.github.io/threadlatch/) · [Yol haritası](docs/ROADMAP.md) · [English](README.md)
 
 > **Durum: geliştirme aşamasında.** Şu an repoda proje tanıtımı, uygulama planı ve yayın altyapısı bulunuyor. Uygulama ve sağlayıcı uyumluluk testleri henüz tamamlanmadı.
 

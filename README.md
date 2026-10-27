@@ -2,7 +2,7 @@
 
 **Track decisions, corrections, and open questions across coding agents and AI chats—with source-linked, portable memory.**
 
-[Project page](https://deays.github.io/threadlatch/) · [Build plan](docs/superpowers/plans/2026-10-27-threadlatch.md) · [Türkçe](README.tr.md)
+[Project page](https://deays.github.io/threadlatch/) · [Roadmap](docs/ROADMAP.md) · [Türkçe](README.tr.md)
 
 > **Status: in development.** This repository currently contains the project introduction, implementation plan, and publishing infrastructure. The application and provider compatibility tests are still to be implemented.
 
