@@ -2,6 +2,12 @@
 
 Repository: <https://github.com/deAYS/threadlatch>
 
+## Current implementation checkpoint — 2026-10-27
+
+The source now contains the shared protocol/merge engine, file and IndexedDB adapters, Node CLI, skill installer/setup/doctor and optional EN/TR React review app. Read [implementation status](IMPLEMENTATION-STATUS.md) and [verification evidence](evaluations/compatibility.md) before continuing. The historical readiness notes below describe the starting point, not the current code inventory. The stable release is still incomplete: real provider/host cycles, participant trials and remote platform CI remain open. No application deployment or stable tag has been made.
+
+Use Node 22.x, at least 22.12.0. The local host's other Node versions must not be mistaken for tested runtime support. Keep provider logs and personal work artifacts outside public commits. The CLI tarball includes skill assets; the web build includes neither the CLI nor install manifests.
+
 Read `docs/superpowers/plans/2026-10-27-threadlatch.md` before implementing the application. This document records repository readiness and integration boundaries for contributors.
 
 ## Scope already prepared

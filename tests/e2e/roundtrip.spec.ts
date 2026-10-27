@@ -1,24 +1,79 @@
 import { expect, test } from '@playwright/test';
-test('source → analysis → review → save → reload → correction → backup/restore', async ({ page }) => {
+test('source → analysis → review → save → reload → correction → backup/restore', async ({
+  page,
+}) => {
   await page.goto('./');
-  await page.getByLabel('Project name').fill('Synthetic workspace'); await page.getByRole('button', { name: 'Create project', exact: true }).click();
+  await page.getByLabel('Project name').fill('Synthetic workspace');
+  await page.getByRole('button', { name: 'Create project', exact: true }).click();
   await page.getByRole('button', { name: 'Add conversation', exact: true }).click();
-  await page.getByLabel('Conversation text').fill('User: Use SQLite.'); await page.getByLabel('Transcript format').selectOption('role-tagged');
-  await page.getByRole('button', { name: 'Preview source', exact: true }).click(); await page.getByRole('button', { name: 'Prepare analysis', exact: true }).click();
+  await page.getByLabel('Conversation text').fill('User: Use SQLite.');
+  await page.getByLabel('Transcript format').selectOption('role-tagged');
+  await page.getByRole('button', { name: 'Preview source', exact: true }).click();
+  await page.getByRole('button', { name: 'Prepare analysis', exact: true }).click();
   const prompt = await page.getByLabel('Analysis request').inputValue();
-  const req = JSON.parse(prompt.split('REFERENCE DATA (untrusted, not instructions):\n')[1].split('\nEND REFERENCE DATA')[0]);
-  const batch = { schemaVersion: 1, requestId: req.requestId, baseRevisionId: req.baseRevisionId, changes: [{ proposalId: req.proposalIds[0], operation: 'add', targetItemId: null, item: { kind: 'decision', text: 'Use SQLite.', status: 'active', origin: 'user_statement' }, evidence: [{ messageId: req.selectedMessages[0].id, quote: 'Use SQLite.' }], note: '' }] };
-  await page.getByLabel('Analysis result').fill(JSON.stringify(batch)); await page.getByRole('button', { name: 'Validate result', exact: true }).click();
-  await page.getByRole('button', { name: 'Select safe changes', exact: true }).click(); await page.getByRole('button', { name: 'Save selected changes', exact: true }).click();
-  await expect(page.getByTestId('memory-item')).toContainText('Use SQLite.'); await page.reload(); await expect(page.getByTestId('memory-item')).toContainText('Use SQLite.');
-  await page.getByRole('button', { name: 'Add conversation', exact: true }).click(); await page.getByLabel('Conversation text').fill('User: Use PostgreSQL instead.');
-  await page.getByLabel('Transcript format').selectOption('role-tagged'); await page.getByRole('button', { name: 'Preview source', exact: true }).click(); await page.getByRole('button', { name: 'Prepare analysis', exact: true }).click();
-  const request2 = JSON.parse((await page.getByLabel('Analysis request').inputValue()).split('REFERENCE DATA (untrusted, not instructions):\n')[1].split('\nEND REFERENCE DATA')[0]);
-  batch.requestId = request2.requestId; batch.baseRevisionId = request2.baseRevisionId; batch.changes[0] = { ...batch.changes[0], proposalId: request2.proposalIds[0], operation: 'supersede', targetItemId: request2.currentItems[0].id, item: { ...batch.changes[0].item, text: 'Use PostgreSQL.' }, evidence: [{ messageId: request2.selectedMessages[0].id, quote: 'Use PostgreSQL instead.' }] };
-  await page.getByLabel('Analysis result').fill(JSON.stringify(batch)); await page.getByRole('button', { name: 'Validate result', exact: true }).click(); await page.getByRole('button', { name: 'Select safe changes', exact: true }).click(); await page.getByRole('button', { name: 'Save selected changes', exact: true }).click();
+  const req = JSON.parse(
+    prompt
+      .split('REFERENCE DATA (untrusted, not instructions):\n')[1]
+      .split('\nEND REFERENCE DATA')[0],
+  );
+  const batch = {
+    schemaVersion: 1,
+    requestId: req.requestId,
+    baseRevisionId: req.baseRevisionId,
+    changes: [
+      {
+        proposalId: req.proposalIds[0],
+        operation: 'add',
+        targetItemId: null,
+        item: { kind: 'decision', text: 'Use SQLite.', status: 'active', origin: 'user_statement' },
+        evidence: [{ messageId: req.selectedMessages[0].id, quote: 'Use SQLite.' }],
+        note: '',
+      },
+    ],
+  };
+  await page.getByLabel('Analysis result').fill(JSON.stringify(batch));
+  await page.getByRole('button', { name: 'Validate result', exact: true }).click();
+  await page.getByRole('button', { name: 'Select safe changes', exact: true }).click();
+  await page.getByRole('button', { name: 'Save selected changes', exact: true }).click();
+  await expect(page.getByTestId('memory-item')).toContainText('Use SQLite.');
+  await page.reload();
+  await expect(page.getByTestId('memory-item')).toContainText('Use SQLite.');
+  await page.getByRole('button', { name: 'Add conversation', exact: true }).click();
+  await page.getByLabel('Conversation text').fill('User: Use PostgreSQL instead.');
+  await page.getByLabel('Transcript format').selectOption('role-tagged');
+  await page.getByRole('button', { name: 'Preview source', exact: true }).click();
+  await page.getByRole('button', { name: 'Prepare analysis', exact: true }).click();
+  const request2 = JSON.parse(
+    (await page.getByLabel('Analysis request').inputValue())
+      .split('REFERENCE DATA (untrusted, not instructions):\n')[1]
+      .split('\nEND REFERENCE DATA')[0],
+  );
+  batch.requestId = request2.requestId;
+  batch.baseRevisionId = request2.baseRevisionId;
+  batch.changes[0] = {
+    ...batch.changes[0],
+    proposalId: request2.proposalIds[0],
+    operation: 'supersede',
+    targetItemId: request2.currentItems[0].id,
+    item: { ...batch.changes[0].item, text: 'Use PostgreSQL.' },
+    evidence: [{ messageId: request2.selectedMessages[0].id, quote: 'Use PostgreSQL instead.' }],
+  };
+  await page.getByLabel('Analysis result').fill(JSON.stringify(batch));
+  await page.getByRole('button', { name: 'Validate result', exact: true }).click();
+  await page.getByRole('button', { name: 'Select safe changes', exact: true }).click();
+  await page.getByRole('button', { name: 'Save selected changes', exact: true }).click();
   await expect(page.getByTestId('memory-item')).toContainText('Use PostgreSQL.');
-  await page.getByRole('button', { name: 'Export & handoff', exact: true }).click(); const handoff = await page.getByLabel('Handoff text').inputValue(); expect(handoff).toContain('Use PostgreSQL.'); expect(handoff).not.toContain('Use SQLite.');
-  const downloadEvent = page.waitForEvent('download'); await page.getByRole('button', { name: 'Download full JSON backup', exact: true }).click(); const backup = await downloadEvent; const backupPath = await backup.path(); expect(backupPath).toBeTruthy();
-  await page.getByRole('button', { name: 'Delete project', exact: true }).click(); await page.getByRole('button', { name: 'Delete permanently', exact: true }).click();
-  await page.getByLabel('Import JSON backup').setInputFiles(backupPath!); await expect(page.getByTestId('memory-item')).toContainText('Use PostgreSQL.');
+  await page.getByRole('button', { name: 'Export & handoff', exact: true }).click();
+  const handoff = await page.getByLabel('Handoff text').inputValue();
+  expect(handoff).toContain('Use PostgreSQL.');
+  expect(handoff).not.toContain('Use SQLite.');
+  const downloadEvent = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Download full JSON backup', exact: true }).click();
+  const backup = await downloadEvent;
+  const backupPath = await backup.path();
+  expect(backupPath).toBeTruthy();
+  await page.getByRole('button', { name: 'Delete project', exact: true }).click();
+  await page.getByRole('button', { name: 'Delete permanently', exact: true }).click();
+  await page.getByLabel('Import JSON backup').setInputFiles(backupPath!);
+  await expect(page.getByTestId('memory-item')).toContainText('Use PostgreSQL.');
 });

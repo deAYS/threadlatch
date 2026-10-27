@@ -1,6 +1,6 @@
 # Coding-agent integration design
 
-**Status: planned, not implemented or tested.** ThreadLatch is intended for Codex, Claude Code, and other coding agents as well as browser chat tools. The browser is an optional review interface.
+**Status: implemented preview; host/provider verification is tracked separately in [compatibility evidence](evaluations/compatibility.md).** The CLI and browser share the core; Codex and Claude Code use one installable skill. Automated file/process and browser tests are not a blanket provider compatibility claim.
 
 ## Shared local memory
 
@@ -14,9 +14,9 @@ These files may contain private content. Initialization must keep the directory 
 
 The browser imports/exports the same archive for review. Browser and CLI stores do not silently synchronize: importing a conflicting revision requires explicit reconciliation. CLI updates use exclusive locking, revision checking, and atomic file replacement. Corrupt files or competing writes must leave the last good state intact.
 
-## Planned CLI operations
+## CLI operations
 
-The implementation plan specifies `init`, `status`, `request`, `import`, `apply`, and `export` commands. These are interface requirements, not commands available in this repository today.
+The CLI provides `init`, `status`, `request`, `import`, `apply`, and `export`, plus setup/doctor, skill lifecycle, history, manual edits and restore. Run with Node 22.x (at least 22.12.0). Input files must stay inside the selected project. See the README for source and tarball installation.
 
 1. Initialize project memory without replacing existing agent instructions.
 2. Ask a coding agent to read the generated `current.md` for relevant project context.
@@ -30,7 +30,7 @@ No extra provider API key is required by this design: the user's already-running
 
 Installable skills for Codex and Claude Code are part of the first-release requirements. The skill is a thin workflow layer over the same validated CLI: it reads current memory, prepares proposals from explicitly available source text, presents one concise review, and saves the selected batch through the CLI. It does not implement a second memory store or edit the canonical archive directly.
 
-See [easy-start and skill design](ONBOARDING.md) for the setup, package, invocation, update/removal, and usability requirements. The canonical source will be `skills/threadlatch/SKILL.md`; the installer targets the project's `.agents/skills/threadlatch/` for Codex and `.claude/skills/threadlatch/` for Claude Code. No installable skill has been implemented yet.
+See [onboarding](ONBOARDING.md) for setup, invocation, update/removal and remaining usability gates. The canonical source is `skills/threadlatch/SKILL.md`; the installer targets `.agents/skills/threadlatch/` for Codex and `.claude/skills/threadlatch/` for Claude Code. Versioned skill assets are included in the CLI tarball; they are excluded from the web build.
 
 ## Instruction-file guidance
 

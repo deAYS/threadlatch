@@ -7,8 +7,9 @@ ThreadLatch is being built to carry source-linked project memory between coding 
 - Project introduction, English/Turkish README, and MIT license.
 - Technical design and implementation plan.
 - Manually triggered GitHub Pages publishing.
+- Preview implementation of the shared engine, local CLI, skill installer/doctor and optional EN/TR browser review. See [implementation status](IMPLEMENTATION-STATUS.md) and [test evidence](evaluations/compatibility.md).
 
-The application and command-line tool are not released yet. The project page shows a synthetic illustration, not a running application.
+The preview has not been published as a stable application or npm release. The project page still shows a synthetic illustration; application publishing remains manual and gated.
 
 ## First release
 

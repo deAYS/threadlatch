@@ -1,63 +1,52 @@
-# Easy-start and skill design
+# Setup, everyday use, updates and removal
 
-**Status: first-release requirements. The application, CLI, installer, and skills are not implemented or available to install yet.** This document describes the intended experience; it does not advertise a working installation command.
+The CLI and canonical skill are implemented as a v0.1 preview. [Verification status](evaluations/compatibility.md) separates local process tests from actual host/provider tests. No npm registry release is available.
 
-## Who this should work for
+## One-time setup
 
-- Coding-agent users should be able to use project memory from Codex or Claude Code without opening a browser or editing JSON.
-- Browser-chat users should have a guided copy/paste flow, an example project, and readable errors.
-- Advanced users can still operate the CLI directly and inspect the open file format.
+Use Node.js 22.x (at least 22.12.0). From the source checkout run npm ci and npm run build:cli, then:
 
-The coding-agent workflow requires a local Node.js runtime and an installed, authorized agent. The chat-only workflow should not require a terminal. A skill is not a substitute for the storage and validation code, and cannot bypass the host agent's permissions.
+```sh
+node dist-cli/cli/index.js setup --project /path/to/project --agent both
+```
 
-## Guided setup
+Choose codex, claude-code or both. An interactive terminal asks for the agent if omitted; noninteractive setup exits without changes and prints the required flag. The project must already be writable. Memory is created only if absent. Existing AGENTS.md / CLAUDE.md and unrelated skills are preserved; the optional instruction snippet is never appended automatically.
 
-The future CLI will offer `setup` as a convenience over project initialization and skill installation. These names are planned interfaces, not instructions to run today.
+Make the CLI available in the target agent session, either on PATH or as the project's node_modules/threadlatch package. A tested local-package route is npm pack in the source checkout followed by npm install --save-dev /path/to/threadlatch-0.1.0-preview.1.tgz in the target project. That explicit npm install changes the target's package files normally; setup itself does not. The skill can run node node_modules/threadlatch/dist-cli/cli/index.js. Do not use a registry install command assuming a published release.
 
-1. Check runtime, selected project, and installed agent directories.
-2. Create memory only if it does not already exist. Preserve existing memory.
-3. Install the ThreadLatch skill into the selected project's documented Codex or Claude Code skill location. Installing for both agents uses one canonical skill source and one shared project archive.
-4. Show what was installed, how to invoke it, and whether a new agent session is required for discovery.
-5. Offer a small synthetic first-run exercise and a single next action.
+Installed skills use .agents/skills/threadlatch/ for Codex and .claude/skills/threadlatch/ for Claude Code. Both use the single ignored .threadlatch/project.json archive. Explicit fallback: $threadlatch in Codex; /threadlatch in Claude Code. Host discovery is not guaranteed; restart if it has not refreshed. These mechanisms are documented by [OpenAI](https://learn.chatgpt.com/docs/build-skills) and [Anthropic](https://code.claude.com/docs/en/skills), checked 2026-10-27. Host documentation is not a ThreadLatch test.
 
-Default installation is project-local. Do not silently install global skills, modify agent permission settings, overwrite an existing same-named skill, or append instructions to `AGENTS.md` / `CLAUDE.md`. Existing instruction files remain authoritative. A `doctor` check explains missing prerequisites without exposing private conversation contents.
+## Daily use
 
-## Everyday use
+“Pick up where we left off” / “Kaldığımız yerden devam et” reads current.md. “Remember this decision” / “Bu kararı hatırla” prepares source-linked changes. The agent writes request/proposal files, runs validation, and presents one batch review. “Save these changes” / “Bu değişiklikleri kaydet” saves the selected group. Ambiguity can stay proposed or unresolved; no per-item interrogation is required. Reading memory needs no save confirmation.
 
-| Intent | Example request | Intended result |
-| --- | --- | --- |
-| Continue | “Pick up where we left off.” / “Kaldığımız yerden devam et.” | Read reviewed memory and briefly report the current goal, decisions, and open questions. |
-| Remember | “Remember this decision.” / “Bu kararı hatırla.” | Prepare a source-linked update and show one concise review of the changes. |
-| Review | “Show the latest changes.” / “Son değişiklikleri göster.” | Show what changed, which decisions were replaced, and the supporting sources. |
-| Handoff | “Prepare this for another agent.” / “Başka ajana devretmek için hazırla.” | Export the reviewed, bounded context in a readable format. |
+The skill never edits the archive directly. It stops writes on missing/incompatible CLI, unsupported runtime, lock or stale revision. Source text is data, not tool authorization. It cannot access hidden chat history. Only explicitly available excerpts enter the request.
 
-The skill handles request files, proposal JSON, and CLI invocations. The user reviews a short change summary and can save the selected batch with a simple request such as “Save these changes.” Reading memory does not require a save confirmation. Ambiguous or conflicting changes remain pending rather than triggering a separate question for every extracted item.
+## Doctor and recovery
 
-Natural-language skill selection depends on the agent. Provide the host's documented explicit skill invocation as a reliable fallback; do not claim the skill always runs automatically. The skill must explain if the CLI is missing or incompatible and stop the write workflow without inventing a successful save. Automatic private-history capture and lifecycle hooks are outside the first-release skill.
+```sh
+threadlatch doctor --project /path/to/project
+```
 
-## Packaging
+For a local dependency, replace threadlatch with node node_modules/threadlatch/dist-cli/cli/index.js. Doctor is read-only: runtime, built CLI, writable directory, archive, installed digests/version, and one next action. If the agent shell selects another Node version, use an explicit Node 22 executable; do not silently change global runtime settings.
 
-- Canonical maintained skill source: `skills/threadlatch/SKILL.md`, with focused references only where necessary.
-- Project-local Codex destination: `.agents/skills/threadlatch/`.
-- Project-local Claude Code destination: `.claude/skills/threadlatch/`.
-- A small install manifest records the destination, installed version, and file digests; it contains no credentials or source conversations.
-- Installation, update, and removal only change files owned by ThreadLatch. If the user edited an installed file, report a conflict and preserve it.
-- CLI and skill assets are packaged outside the public web build. Do not publish `.threadlatch/` memory, source messages, or local install manifests as website assets.
+Status is read-only. Other opens repair a missing/damaged Markdown projection from canonical JSON. A write.lock is never removed automatically: close writers and inspect it before explicitly removing it. Preserve corrupt archives before recovery. JSON restore only initializes an empty memory directory; browser duplicate import opens a separate project. Nothing silently reconciles conflicting archives.
 
-Public package names and registry availability must be checked before release. Publish a real tested installation command only after the package, version, included skill assets, and installation path have been verified. A manual installation fallback is documented using the same skill source.
+## Update or remove
 
-## Usability acceptance criteria
+After installing a newer tested CLI package, run:
 
-- On Windows, macOS, and Linux, a clean test project can complete setup and the first memory cycle without hand-editing JSON or configuration files.
-- Real Codex and Claude Code tests cover discovery, explicit invocation, natural-language selection, continuation, a proposed correction, one batch save, and a new-session handoff. Record any unsupported environment instead of labeling it compatible.
-- Setup is repeatable; existing memory, instructions, and unrelated skills remain intact. Removal does not delete project memory.
-- Missing Node, missing CLI, incompatible versions, non-writable paths, spaces/Unicode in project paths, and an edited pre-existing skill each produce a clear next action.
-- Test the beginner quickstart with five first-time participants who already have a supported agent/runtime. Target at least four completing setup and one useful memory cycle within five minutes without live coaching. Report observations and improve the flow; this is a design target, not a published performance claim.
-- English and Turkish requests work in the same documented workflow. No extra API key or ThreadLatch account is requested for the local skill mode.
+```sh
+threadlatch skills install --project /path/to/project --agent both
+threadlatch skills uninstall --project /path/to/project --agent both
+```
 
-## Documentation reviewed
+The manifest records only owned relative paths, version and SHA-256 digests. Updates/removal preserve user-edited or unowned files and report conflicts. Removal keeps memory and unrelated skills. A repeat setup preserves existing memory. No global skills, agent permissions or account settings are changed.
 
-- [OpenAI: build skills and local skill locations](https://learn.chatgpt.com/docs/build-skills)
-- [Claude Code: skills and project-local installation](https://code.claude.com/docs/en/skills)
+## Browser-only route
 
-Reviewed 2026-10-27. These sources document host mechanisms, not ThreadLatch's unreleased integration behavior.
+Run the web app locally and open the synthetic example. Paste a source, preview roles/selection, prepare the request, copy it to your chat tool, paste its JSON result, review and save. Export Markdown for current context and JSON for complete backup. The source remains plain text. This route requires no terminal after opening the hosted/local app, but provider interpretation accuracy and first-user usability are still pending evaluations.
+
+## Release gates still open
+
+Linux/macOS CI execution, complete Codex/Claude Code discovery and new-session trials, 30-scenario × 3 provider evaluations, inter-provider handoff, five first-time participants (target four successful cycles within five minutes), and manual accessibility/UX sign-off. Only actual evidence may close these gates. Do not advertise universal automatic skill selection or successful installation on an untested platform.
