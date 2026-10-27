@@ -2,6 +2,8 @@
 
 Date: 2026-10-27. Version: 0.1.0-preview.1. Prompt: threadlatch-extraction-1. Sources and test projects are synthetic. No private session logs are committed.
 
+The 30-case fixture set includes 15 EN/15 TR cases, exactly 10 flagged critical cases and six malicious inputs. Each case records initial active concepts, the expected final active concept set, forbidden promotions, source branch and correction/cancellation operation. These are semantic expectations for a future real-provider review, not exact paraphrase matching. The automated candidate-status tests exercise deterministic role/intent guards; they do not claim to run a model or verify the full expected extraction set.
+
 ## Automated local checks
 
 Windows, Node.js 22.23.4: unit/integration tests include strict schemas, exact quotes, malformed replies, examples/suggestions, ambiguity, revisions, branches, replay, immutable sources/history, Unicode paths, symlinks, exclusive locks, full archive remapping and spawned Node process concurrency. IndexedDB unit tests use fake-indexeddb; they are supplemented by real Chromium tests.
