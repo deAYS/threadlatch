@@ -4,7 +4,7 @@
 
 **Goal:** AI sohbetlerindeki kararları, düzeltmeleri ve açık soruları kaynak mesajlarıyla saklayan; değişimleri gösteren ve farklı AI araçlarına taşınabilir güncel bağlam üreten açık kaynak bir uygulama.
 
-**Architecture:** İlk sürüm ortak, platformdan bağımsız bir çekirdek üzerinde iki yerel arayüz sunar: Codex/Claude Code gibi coding agent'lar için Node.js CLI ve değişiklik incelemek için statik React arayüzü. CLI proje dosyalarında, tarayıcı IndexedDB'de saklar; ikisi aynı sürümlü JSON arşivini paylaşır ve açık import/export ile taşır. Analizi mevcut coding agent veya sohbet aracı yapar; sonuç kaynaklarıyla doğrulanır ve uygulanmadan önce karşılaştırılır. Tarayıcı kullanımı coding agent akışı için zorunlu değildir. Doğrudan sağlayıcı API bağlantısı ve otomatik geçmiş toplama sonraki sürümlerdir.
+**Architecture:** İlk sürüm ortak, platformdan bağımsız bir çekirdek üzerinde Node.js CLI ve statik React inceleme arayüzü sunar. Codex/Claude Code için kurulabilir skill'ler, kullanıcının günlük dildeki isteğini aynı CLI'ın doğrulanmış işlemlerine bağlar; yönlendirmeli kurulum dosya düzenlemeyi gereksiz kılar. CLI proje dosyalarında, tarayıcı IndexedDB'de saklar; ikisi aynı sürümlü JSON arşivini açık import/export ile taşır. Analizi mevcut ajan veya sohbet aracı yapar; öneriler kaynaklarıyla doğrulanıp incelenir. Coding-agent akışında tarayıcı zorunlu değildir. Doğrudan sağlayıcı API bağlantısı ve otomatik geçmiş toplama sonraki sürümlerdir.
 
 **Tech Stack:** TypeScript, Node.js CLI, React, Vite, Zod, Dexie/IndexedDB ve yerel dosya adaptörü, Vitest, Playwright; npm ve kilit dosyası; public GitHub repository ve GitHub Actions. Web çıktısı `dist/`, CLI çıktısı `dist-cli/` olur.
 
@@ -16,6 +16,7 @@
 
 - Ürün adı ThreadLatch; önerilen repository adı `threadlatch`.
 - v0.1 ortak çekirdek, Node.js CLI ve statik web arayüzüdür; kullanıcı hesabı, uygulama sunucusu, API anahtarı ve uygulama tarafından başlatılan AI isteği yoktur.
+- v0.1 Codex/Claude Code skill paketlerini, proje içi yönlendirmeli kurulumu ve `doctor` kontrolünü içerir. Günlük kullanımda kullanıcının JSON düzenlemesi veya bütün CLI komutlarını öğrenmesi gerekmez.
 - Sohbet, bellek ve dışa aktarma işlemleri cihazda yapılır; analytics, üçüncü taraf font, reklam ve uzaktan hata kaydı yoktur. Coding agent dosya/CLI akışı tarayıcı olmadan tamamlanabilir.
 - Bir alıntının eşleşmesi yalnızca kaynak eşleşmesini doğrular; yorumun veya iddianın doğruluğunu kanıtlamaz.
 - AI sonucu güncel belleği doğrudan değiştirmez. Kaydetme yalnızca kullanıcının seçtiği geçerli değişikliklere uygulanır.
@@ -30,9 +31,9 @@
 
 1. Örnek ve alıntı içindeki sözde talepler: örnek metni aktif gereksinime dönüşmemeli. Görev 1 ve 3.
 2. İptal, düzeltme ve çelişen sohbet dalları: eski karar geri gelmemeli, tarih sırası tek başına yetki sayılmamalı. Görev 4 ve 5.
-3. Bozuk veya kötü niyetli model çıktısı: geçersiz referans, bayat revision, HTML ve talimat enjeksiyonu veri kaybına ya da çalıştırmaya yol açmamalı. Görev 3, 7 ve 8.
+3. Bozuk veya kötü niyetli model çıktısı: geçersiz referans, bayat revision, HTML ve talimat enjeksiyonu veri kaybına ya da çalıştırmaya yol açmamalı. Görev 3, 7, 8 ve 9.
 4. Tekrarlanan aktarım ve çoklu sekme: aynı güncelleme iki kez uygulanmamalı, başka sekmenin değişiklikleri ezilmemeli. Görev 2, 4 ve 5.
-5. Türkçe/İngilizce, emoji, uzun girdi ve silinen kaynaklar: alıntı adresleri bozulmamalı; sessiz kesme veya eksik yedek geri yükleme olmamalı. Görev 2, 6, 7 ve 8.
+5. Türkçe/İngilizce, emoji, uzun girdi ve silinen kaynaklar: alıntı adresleri bozulmamalı; sessiz kesme veya eksik yedek geri yükleme olmamalı. Görev 2, 6, 7, 8 ve 9.
 
 ## Ürün kararı ve kapsam
 
@@ -74,8 +75,8 @@ Ajan güncel Markdown'ı okur, açıkça verilen kaynak mesajlardan schema uyuml
 
 | Araç | v0.1 planı | Sonraki doğrudan bağlantı | Yayında nasıl ifade edilir? |
 | --- | --- | --- | --- |
-| Codex | Yerel `.threadlatch/` belleği, Node CLI, isteğe bağlı `AGENTS.md` yönlendirmesi | Daha sonra native hook/MCP; ilk sürüm için şart değil | Gerçek oturumda dosya okuma/öneri/yeniden devralma sınanınca `tested` |
-| Claude Code | Aynı yerel bellek ve CLI, isteğe bağlı `CLAUDE.md` yönlendirmesi | Daha sonra native hook/MCP | Aynı test ölçütü |
+| Codex | Yönlendirmeli proje içi skill kurulumu, ortak `.threadlatch/` belleği ve CLI; isteğe bağlı `AGENTS.md` yönlendirmesi | Daha sonra native hook/MCP; ilk sürüm için şart değil | Gerçek oturumda kurulum/skill seçimi/okuma/öneri/yeniden devralma sınanınca `tested` |
+| Claude Code | Proje içi skill kurulumu, aynı bellek ve CLI; isteğe bağlı `CLAUDE.md` yönlendirmesi | Daha sonra native hook/MCP | Aynı test ölçütü |
 | ChatGPT | Metin isteği, JSON analiz sonucu, Markdown aktarımı | OpenAI API; ChatGPT hesabı/geçmişi bağlantısından ayrı | Manuel akış gerçek oturumda sınanınca `tested` |
 | Claude | Aynı taşınabilir protokol | Anthropic Messages API | Aynı test ölçütü |
 | Muse | Aynı taşınabilir protokol | Kullanıcının kastettiği ürün doğrulanınca uygun resmî API | Ürün belirsizken native destek iddiası yok |
@@ -223,7 +224,22 @@ Her görevde önce belirtilen davranışı yakalayan test yazılır, beklenen ne
 - [ ] `npm run test -- tests/cli tests/storage/file-projects.test.ts tests/agents` geçsin. Tam akışı spawned Node process üzerinden test et: init → request → fixture proposal import → seçili apply → export → browser archive import/export → CLI'da aynı revision/madde kümesini doğrula. Paralel iki process'te tek kazanan, diğerinde görünür revision/lock hatası olsun.
 - [ ] Gerçek Codex ve Claude Code oturumlarında mevcut yetkili erişimle tarayıcısız okuma → öneri → doğrulanmış apply → sonraki oturuma devir testini yap; sürüm/tarih/sonuçları kaydet. Erişim yoksa pending ve untested olarak bırak; komutların yerel process testi yine zorunludur.
 
-### Task 8: Gerçek kullanım, güvenlik ve erişilebilirlik doğrulaması
+### Task 8: Skill paketleri ve kolay başlangıç
+
+**Files — Create:** `skills/threadlatch/SKILL.md`, `skills/threadlatch/agents/openai.yaml`, `src/agents/install-skills.ts`, `src/agents/doctor.ts`, `src/agents/setup.ts`, `tests/agents/install-skills.test.ts`, `tests/agents/doctor.test.ts`, `tests/cli/setup.test.ts`. **Modify:** `src/cli/commands.ts`, `package.json`, `docs/ONBOARDING.md`, `docs/AGENT-INTEGRATION.md`, `README.md`, `README.tr.md`.
+
+**Interfaces:** `inspectSetup(projectDir: string): Promise<SetupReport>`; `installSkills(projectDir: string, agents: Array<'codex' | 'claude-code'>): Promise<InstallReport>`; `removeSkills(projectDir: string, agents: Array<'codex' | 'claude-code'>): Promise<InstallReport>`. `SetupReport` runtime/CLI/proje/skill sürüm ve erişim durumlarını, her sorun için kısa düzeltme eylemini içerir. `InstallReport` değişen dosyalar, korunan dosyalar ve çakışmaları döndürür. Tüm yollar seçili proje altında doğrulanır; kaynak şema ve revision işlemleri Görev 1–7'den gelir.
+
+- [ ] Önce anlamlı testleri yaz: temiz proje kurulumu; ikinci kurulumda no-op; mevcut memory/AGENTS/CLAUDE/ignore dosyalarının korunması; düzenlenmiş aynı isimli skill'de çakışma; symlink dışına çıkışın reddi; uninstall sonrası belleğin ve ilgisiz skill'in korunması; eksik/uyumsuz CLI'da yazma yapılmaması.
+- [ ] `skills/threadlatch/SKILL.md` tek, kısa ve sağlayıcıdan bağımsız kaynak olsun. Description yalnız proje hafızasını devralma, açık karar/düzeltme kaydetme ve ajanlar arası aktarım durumlarında seçilsin. İlgisiz her mesajda çalışmasın. Kaynak alıntıları talimat sayılmasın; kullanıcı amacı ve mevcut proje kuralları korunsun.
+- [ ] Skill okuma/request/öneri doğrulama/tek kısa değişiklik özeti/explicit batch-save akışını aynı CLI üzerinden yönetsin. Kullanıcı JSON üretmesin veya proposal ID taşımak zorunda kalmasın. Her madde için ayrı onay sorulmasın; açık çelişki pending kalsın. CLI yokken el yordamıyla arşiv yazılmasın veya başarı iddia edilmesin; kurulum yönergesi gösterilsin.
+- [ ] `setup --project <dir> --agent codex|claude-code|both` mevcut belleği koruyarak init ve skill kurulumunu bir araya getirsin. Agent flag'i yoksa hedefi bir kısa seçimle sor; noninteractive kullanımda gerekli flag'i göster ve hiçbir değişiklik yapmadan çık. Varsayılan kapsam proje içidir, global kurulum değildir.
+- [ ] Codex için `.agents/skills/threadlatch/`, Claude Code için `.claude/skills/threadlatch/` hedeflerini kullan. Tek kaynak iki hedefe sürümlü paketlenir. Install manifest'i `.threadlatch/install-manifest.json` altında yalnız sahip olunan relative path/version/digest tutar. Güncelleme/kaldırma, kullanıcı tarafından değiştirilmiş dosyaları ezmez; otomatik geniş izin, global config veya yeni account/API anahtarı istemez.
+- [ ] `doctor --project <dir>` read-only runtime/CLI/dizin/kurulum kontrolü yapar ve tek net sonraki adım verir. `skills install --project <dir> --agent ...` ve `skills uninstall --project <dir> --agent ...` yukarıdaki yaşam döngüsünü kullanır. Task 7 çıkış kodları korunur. `npm pack --dry-run` ile skill asset'lerinin CLI paketinde bulunduğunu, `.threadlatch/` ve özel verinin bulunmadığını doğrula; web `dist/` içine CLI/skill installer çıktısı girmez.
+- [ ] SKILL frontmatter ve OpenAI UI metadata'sını resmi şemalarla doğrula. Sağlayıcıların açık skill çağırma biçimini uygulama gününde belgelerle doğrulayıp fallback olarak belgele; doğal dilde otomatik seçimi garanti etme. Geçerli kurulum/paket adı doğrulanmadan çalışıyormuş gibi install komutu yayınlama.
+- [ ] `npm run test -- tests/agents tests/cli/setup.test.ts` geçsin. Windows/macOS/Linux için kurulmuş paket fixture'ında agent klasörü ve komut yolu senaryolarını dene. Gerçek Codex/Claude Code oturumlarında discovery, explicit invocation ve TR/EN doğal dil akışlarını test edip sürüm/tarih/sonucu kaydet. Erişim yoksa gerçek ajan testi pending kalır; yerel dosya ve süreç testleri yine zorunludur.
+
+### Task 9: Gerçek kullanım, güvenlik ve erişilebilirlik doğrulaması
 
 **Files — Create:** `playwright.config.ts`, `tests/e2e/roundtrip.spec.ts`, `tests/e2e/privacy.spec.ts`, `tests/e2e/recovery.spec.ts`, `tests/e2e/accessibility.spec.ts`, `docs/evaluations/compatibility.md`.
 
@@ -236,9 +252,10 @@ Her görevde önce belirtilen davranışı yakalayan test yazılır, beklenen ne
 - [ ] Erişim olan sağlayıcılarda 30 senaryoyu üçer kez dene. Sıra: ChatGPT, Claude, Muse, GLM. Yalnız mevcut ve yetkili erişimi kullan; yeni üyelik veya ödeme gerektiren testleri pending bırak. Tarih, araç/model, prompt sürümü, geçerli JSON oranı, kanıt geçerliliği ve kritik yanlış terfileri kaydet; sentetik veri kullan.
 - [ ] Canlı testte 30 senaryodan en az 27'sinde beklenen madde kümesi doğru; 10 kritik senaryoda üç tekrarda da hatalı aktif-karar terfisi yok; tüm otomatik kaynak/şema güvenlik testleri geçiyor ise provider `tested` olabilir. Bunlar release eşikleridir, evrensel doğruluk oranı değildir. Başaramayan provider `experimental` kalır.
 - [ ] En az iki araç arasında handoff dene: alıcıdan yalnız güncel kararları ve açık soruları listelemesini iste; eski kararları geri getirmesin. Erişim yoksa README açıkça `not yet tested` desin.
+- [ ] Yeni kullanıcı quickstart'ını mevcut desteklenen ajan/runtime'a sahip beş ilk kez kullanan katılımcıyla dene. En az dördünün yardım almadan beş dakika içinde setup ve bir yararlı bellek döngüsünü bitirmesini hedefle; gözlem sonuçlarını raporla ve sürtünmeyi düzelt. Bu bir tasarım hedefidir, ölçülmeden başarı iddiasına dönüşmez. Terminal bilmeyen chat kullanıcılarının örnek projeden guided akışı tamamlamasını ayrıca kontrol et.
 - [ ] `npm run test:e2e` geçsin; kalan manuel test ve erişim eksikleri uyumluluk matrisinde açıkça yer alsın. Sınanmayan kullanım sınanmış diye yayınlanmasın.
 
-### Task 9: Public GitHub hazırlığı ve v0.1 çıkışı
+### Task 10: Public GitHub hazırlığı ve v0.1 çıkışı
 
 **Mevcut durum:** Tanıtım sayfası, README'ler, MIT lisansı ve manuel Pages workflow'u hazırlanmıştır. Aşağıdaki kalan uygulama yayın işlerini mevcut dosyalarla birleştirin; tamamlanmış altyapıyı yeniden oluşturmayın.
 
@@ -258,6 +275,7 @@ Her görevde önce belirtilen davranışı yakalayan test yazılır, beklenen ne
 - Temiz clone'dan belgelenmiş komutlarla kurulur; CI geçer ve statik build çalışır.
 - Sentetik bir projenin kararları çıkarılabilir, kaynakları incelenebilir, sonraki değişiklikler karşılaştırılabilir ve yeni AI sohbetine aktarılabilir.
 - Codex/Claude Code için Node CLI ve dosya akışı tarayıcı açmadan kullanılabilir; gerçek ajan testlerinin yapılma durumu ayrı raporlanır. CLI ve web aynı archive şemasını, kaynak kontrolünü ve merge semantiğini kullanır.
+- Codex/Claude Code skill paketleri ve setup/doctor yaşam döngüsü uygulanmıştır. Başlangıç ve günlük kullanımda kullanıcıdan JSON/config elle düzenlemesi beklenmez; doğal dil ve explicit skill invocation test durumları açıklanır. Mevcut memory/agent kuralları korunur ve uninstall belleği silmez.
 - İptal edilen karar aktif listeden kalkar; örnekler ve asistan önerileri kendiliğinden aktif kullanıcı kararına dönüşmez.
 - Aktif, superseded, proposed ve unresolved ayrımı UI ve export'ta aynıdır; manuel düzeltmeler korunur.
 - Kaynak/ref doğrulaması, yedek round-trip, çoklu sekme yarışı ve veri kaybı testleri geçer.
@@ -293,6 +311,7 @@ Bu kaynaklar 2026-10-27 tarihinde incelendi. Aşağıdaki bilgiler tasarımın u
 
 - [OpenAI Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs): JSON Schema tabanlı çıktı ve refusal/incomplete durumları. Gelecekteki OpenAI adaptörü için; ChatGPT sohbet geçmişi erişimi sağlamaz.
 - [Codex AGENTS.md](https://learn.chatgpt.com/docs/agent-configuration/agents-md) ve [Claude Code memory](https://code.claude.com/docs/en/memory): repo talimat dosyaları üzerinden dosya tabanlı ajan akışının dayanağı. Bu talimatlar erişim yetkisi veya davranış garantisi değildir; gerçek entegrasyon testinin yerini tutmaz.
+- [OpenAI build skills](https://learn.chatgpt.com/docs/build-skills) ve [Claude Code skills](https://code.claude.com/docs/en/skills): ortak SKILL.md yaklaşımı ve sağlayıcıya özgü proje skill dizinleri. Paketlenen skill ile CLI'ın birlikte gerçek testini gerektirir.
 - [Claude Structured Outputs](https://platform.claude.com/docs/en/build-with-claude/structured-outputs): şemalı çıktı ve sınırları. Native adaptör API sözleşmesini ayrıca ele almalıdır.
 - [Z.AI Quick Start](https://docs.z.ai/guides/overview/quick-start): OpenAI SDK ile Z.AI endpoint kullanımını belgeliyor. Bu, tüm özelliklerin birebir uyumlu olduğu anlamına gelmez.
 - [Meta Model API models](https://dev.meta.ai/docs/models): Muse model ailesi için resmî model/API bilgileri. Kullanıcının kastettiği ürün kimliğinin ayrıca belirlenmesi gerekir.
@@ -302,7 +321,7 @@ Bu kaynaklar 2026-10-27 tarihinde incelendi. Aşağıdaki bilgiler tasarımın u
 
 ## Plan özdenetimi
 
-- Ürün kapsamı Görev 1–9'a dağıtıldı; core kontrat, kaynak doğrulama ve revision semantiği UI'dan önce gelir. Codex/Claude Code için v0.1 CLI kapsamı entegrasyon belgesinde tanımlıdır.
+- Ürün kapsamı Görev 1–10'a dağıtıldı; core kontrat, kaynak doğrulama ve revision semantiği UI'dan önce gelir. v0.1 skill ve onboarding kapsamı `docs/ONBOARDING.md` içinde tanımlıdır.
 - Review Focus'taki beş risk ilgili test görevlerine bağlandı. Otomatik test, manuel UX kontrolü ve gerçek model eval'i ayrı tutuldu.
 - Uygulama dosyaları önerilen yollardır; tamamlanan tanıtım/yayın altyapısı ayrıca belirtilmiştir. Henüz uygulanmayan script veya entegrasyonların çalıştığı iddia edilmez.
 - Şema/proposal, revision, import, export ve storage arabirim adları görevler arasında tutarlıdır.

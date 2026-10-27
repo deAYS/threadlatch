@@ -14,6 +14,8 @@ Veriler kullanılan arayüze göre yerel proje dosyalarında veya tarayıcıda s
 
 Ürün yalnızca tarayıcı için değildir. İlk sürümde ortak bir çekirdek üzerinde Codex ve Claude Code için yerel proje dosyaları ve Node.js CLI; sohbet uygulamaları için de tarayıcı arayüzü ve ortak metin/JSON alışverişi planlanıyor. Coding agent belleği dosyadan okuyup güncelleme önerebilecek; tarayıcı açmak zorunlu olmayacak. CLI ve uygulama henüz uygulanmadı.
 
+İlk sürüm kapsamına **Codex ve Claude Code skill'leri ile yönlendirmeli kurulum** da dahildir. Kullanıcı “bu kararı hatırla”, “kaldığımız yerden devam et” veya “son değişiklikleri göster” diyebilecek; dosya ve CLI adımlarını skill yönetecek. Kullanıcının JSON düzenlemesi gerekmeyecek. [Kolay başlangıç tasarımı](docs/ONBOARDING.md) bu hedefin kurulum ve test ölçütlerini açıklar. Skill ve kurulum aracı henüz yayınlanmadı.
+
 Öncelikli hedefler Codex, Claude Code ve ChatGPT; ardından Claude, Muse ve GLM. Bunlar henüz doğrulanmış entegrasyonlar değildir. Otomatik sohbet okuma, hook, MCP ve native API bağlantıları sonraki aşamalardır. [Coding-agent tasarımı](docs/AGENT-INTEGRATION.md) aynı bellek formatının nasıl paylaşılacağını açıklar.
 
 ## Belgeler

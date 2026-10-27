@@ -16,11 +16,14 @@ The application and command-line tool are not released yet. The project page sho
 - Link proposed changes to source messages and review them before saving.
 - Preserve revision history and keep superseded decisions out of current context.
 - Use local project files and a Node.js CLI with coding agents, without requiring a browser.
+- Include installable Codex and Claude Code skills, guided project setup, and readable setup checks so everyday use can happen through natural-language requests.
 - Offer an optional browser interface to inspect and edit the same memory format.
 - Export readable Markdown handoffs and full JSON backups.
 - Provide English and Turkish interfaces.
 
 Priority workflows: **Codex, Claude Code, and ChatGPT**, followed by Claude, Muse, and GLM. Each workflow will be labeled with its actual test status. There are no verified native integrations yet.
+
+Ease of use is part of the first release: users should not have to edit JSON or memorize the CLI workflow. Read the [easy-start and skill design](ONBOARDING.md) for the planned setup and daily interaction. The skills and installer are not released yet.
 
 ## Later, based on testing and feedback
 

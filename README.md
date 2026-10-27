@@ -20,12 +20,14 @@ The first version is planned around a shared local core with two interfaces: a N
 
 See the [coding-agent integration design](docs/AGENT-INTEGRATION.md) for the planned Codex / Claude Code workflow. The CLI and application are not implemented yet; no install command is advertised as working.
 
+Installable **Codex and Claude Code skills** and a guided setup are also planned for the first release. Everyday use should work through requests like “remember this decision” or “pick up where we left off,” with the skill managing the files and CLI steps. See the [easy-start design](docs/ONBOARDING.md). The skills and installer are not available yet.
+
 ## Compatibility targets
 
 | Tool | Planned first-release workflow | Verification |
 | --- | --- | --- |
-| Codex | Local project files, CLI proposals, optional `AGENTS.md` guidance | Not yet tested |
-| Claude Code | Same project memory, CLI proposals, optional `CLAUDE.md` guidance | Not yet tested |
+| Codex | Guided project-local skill, shared memory files, validated CLI | Not yet tested |
+| Claude Code | Guided project-local skill, same memory and CLI | Not yet tested |
 | ChatGPT | Manual text / JSON exchange and Markdown handoff | Not yet tested |
 | Claude | Same portable workflow | Not yet tested |
 | Muse | Same portable workflow; exact product to be confirmed before a native adapter | Not yet tested |

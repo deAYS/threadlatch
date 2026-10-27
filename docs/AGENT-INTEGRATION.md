@@ -26,6 +26,12 @@ The implementation plan specifies `init`, `status`, `request`, `import`, `apply`
 
 No extra provider API key is required by this design: the user's already-running coding agent supplies the model. A CLI does not automatically gain access to that agent's complete conversation history, hidden state, or private platform APIs. Automatic capture, hooks, native APIs, and MCP are separate later integrations.
 
+## Skill layer and easy setup
+
+Installable skills for Codex and Claude Code are part of the first-release requirements. The skill is a thin workflow layer over the same validated CLI: it reads current memory, prepares proposals from explicitly available source text, presents one concise review, and saves the selected batch through the CLI. It does not implement a second memory store or edit the canonical archive directly.
+
+See [easy-start and skill design](ONBOARDING.md) for the setup, package, invocation, update/removal, and usability requirements. The canonical source will be `skills/threadlatch/SKILL.md`; the installer targets the project's `.agents/skills/threadlatch/` for Codex and `.claude/skills/threadlatch/` for Claude Code. No installable skill has been implemented yet.
+
 ## Instruction-file guidance
 
 Codex recognizes repository `AGENTS.md` guidance. Claude Code documents `CLAUDE.md` and support for `AGENTS.md` under its documented configuration. Instructions affect model behavior; they are not an enforcement boundary.
@@ -46,6 +52,7 @@ The same readable memory file can be explicitly requested in another file-capabl
 ## Implementation acceptance criteria
 
 - Codex and Claude Code can use the documented file workflow without opening a browser.
+- Users can complete setup and a normal memory cycle through the guided skill workflow without editing JSON; `doctor` provides actionable setup errors.
 - CLI and browser read/write the same archive version and produce the same merge results.
 - A user's cancellation, correction, example, or unaccepted assistant suggestion has the same semantics in both interfaces.
 - Concurrent writes, path traversal, symlink escapes, stale revisions, and corrupt archives are rejected without losing current data.
