@@ -73,6 +73,8 @@ export const tr: Record<keyof typeof en, string> = {
   reload: 'Güncel belleği yeniden yükle',
   error: 'İşlem tamamlanamadı. Kaydedilmiş güncel bellek korundu.',
   saved: 'Yeni revision kaydedildi.',
+  pendingSaved:
+    'Analiz inceleme için kaydedildi. Belleği güncellemek için seçili değişiklikleri uygula.',
   active: 'Geçerli',
   proposed: 'Öneri',
   superseded: 'Değiştirildi',

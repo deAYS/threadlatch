@@ -72,6 +72,7 @@ export const en = {
   reload: 'Reload current memory',
   error: 'Could not complete this operation. Current saved memory is preserved.',
   saved: 'Saved a new revision.',
+  pendingSaved: 'Analysis saved for review. Apply selected changes to update memory.',
   active: 'Active',
   proposed: 'Proposed',
   superseded: 'Superseded',

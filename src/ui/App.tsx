@@ -168,10 +168,11 @@ export function App() {
   }
   async function commit(next: ProjectArchive) {
     if (!archive) return;
+    const revisionChanged = next.project.currentRevisionId !== archive.project.currentRevisionId;
     await repo.save(next, archive.project.currentRevisionId);
     setArchive(next);
     setProjects((previous) => previous.map((p) => (p.project.id === next.project.id ? next : p)));
-    setNotice(t('saved'));
+    setNotice(t(revisionChanged ? 'saved' : 'pendingSaved'));
   }
   useEffect(() => {
     void perform(() => refresh());
