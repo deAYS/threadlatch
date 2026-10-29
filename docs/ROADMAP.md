@@ -7,8 +7,9 @@ ThreadLatch is being built to carry source-linked project memory between coding 
 - Project introduction, English/Turkish README, and MIT license.
 - Technical design and implementation plan.
 - Manually triggered GitHub Pages publishing.
+- Preview implementation of the shared engine, local CLI, skill installer/doctor and optional EN/TR browser review. See [implementation status](IMPLEMENTATION-STATUS.md) and [test evidence](evaluations/compatibility.md).
 
-The application and command-line tool are not released yet. The project page shows a synthetic illustration, not a running application.
+The preview has not been published as a stable application or npm release. The project page still shows a synthetic illustration; application publishing remains manual and gated.
 
 ## First release
 
@@ -21,9 +22,11 @@ The application and command-line tool are not released yet. The project page sho
 - Export readable Markdown handoffs and full JSON backups.
 - Provide English and Turkish interfaces.
 
-Priority workflows: **Codex, Claude Code, and ChatGPT**, followed by Claude, Muse, and GLM. Each workflow will be labeled with its actual test status. There are no verified native integrations yet.
+Priority workflows: **Codex, Claude Code, and ChatGPT**, followed by Claude, Muse, and GLM. The recorded Codex skill/CLI save, correction/cancellation and fresh continuation path is tested. Muse Spark 1.3 Contributor meets the scoped prompt-2 extraction threshold through OpenChamber's bundled OpenCode. These results do not establish other host integrations; see the [exact compatibility matrix](evaluations/compatibility.md).
 
 Ease of use is part of the first release: users should not have to edit JSON or memorize the CLI workflow. Read the [easy-start and skill design](ONBOARDING.md) for the planned setup and daily interaction. The skills and installer are not released yet.
+
+Remaining preview-to-stable work: authorized Claude Code and ChatGPT chat tests, five first-time coding-agent participants plus a separate chat/browser trial, and remaining accessibility/UX review. The [participant kit](evaluations/first-use-protocol.md) is ready; no human results are claimed. GLM inference attempts did not complete and are stopped. The [latest checkpoint](evaluations/2026-10-29-release-readiness.md) separates these external dependencies from completed implementation/tests. Stable tagging and application publication remain gated.
 
 ## Later, based on testing and feedback
 

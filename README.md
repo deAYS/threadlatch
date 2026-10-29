@@ -1,60 +1,60 @@
 # ThreadLatch
 
-**Track decisions, corrections, and open questions across coding agents and AI chats—with source-linked, portable memory.**
+**Source-linked, portable project memory across coding agents and AI chats.**
 
-[Project page](https://deays.github.io/threadlatch/) · [Roadmap](docs/ROADMAP.md) · [Türkçe](README.tr.md)
+[Türkçe](README.tr.md) · [Implementation status](docs/IMPLEMENTATION-STATUS.md) · [Test evidence](docs/evaluations/compatibility.md)
 
-> **Status: in development.** This repository currently contains the project introduction, implementation plan, and publishing infrastructure. The application and provider compatibility tests are still to be implemented.
+**v0.1 preview.** The shared engine, Node CLI, project-local Codex/Claude Code skill installer and optional EN/TR web app are implemented. Provider evaluations and first-user trials remain release gates. The npm package is **not published**. The public project introduction is separate from the application.
 
-Long conversations evolve. Decisions get replaced, examples get mistaken for requirements, and suggestions sometimes look like agreements. ThreadLatch is being built to keep the current state of a project clear—and show the messages behind it.
+## Start from source
 
-## Planned workflow
-
-1. Import or paste the relevant conversation.
-2. Prepare an analysis request for an AI chat you already use.
-3. Paste its structured response back into ThreadLatch.
-4. Review source-linked changes before saving them.
-5. Export current context as Markdown, or keep a full JSON backup.
-
-The first version is planned around a shared local core with two interfaces: a Node.js CLI for coding-agent workflows and a browser interface for reviewing changes. Coding agents will be able to read the project's memory files and produce update proposals without opening the browser. Browser chat users will use a manual request/result exchange. Your chosen AI service may require an account and may impose its own usage limits or fees.
-
-See the [coding-agent integration design](docs/AGENT-INTEGRATION.md) for the planned Codex / Claude Code workflow. The CLI and application are not implemented yet; no install command is advertised as working.
-
-Installable **Codex and Claude Code skills** and a guided setup are also planned for the first release. Everyday use should work through requests like “remember this decision” or “pick up where we left off,” with the skill managing the files and CLI steps. See the [easy-start design](docs/ONBOARDING.md). The skills and installer are not available yet.
-
-## Compatibility targets
-
-| Tool | Planned first-release workflow | Verification |
-| --- | --- | --- |
-| Codex | Guided project-local skill, shared memory files, validated CLI | Not yet tested |
-| Claude Code | Guided project-local skill, same memory and CLI | Not yet tested |
-| ChatGPT | Manual text / JSON exchange and Markdown handoff | Not yet tested |
-| Claude | Same portable workflow | Not yet tested |
-| Muse | Same portable workflow; exact product to be confirmed before a native adapter | Not yet tested |
-| GLM / Z.AI | Same portable workflow | Not yet tested |
-| Other chat tools | Generic text / JSON exchange where supported | Not yet tested |
-
-Native API integrations, hooks, MCP, and automatic conversation capture are later milestones. The initial coding-agent interface is local files plus an explicit CLI, not automatic access to hidden chat history. ChatGPT account access and OpenAI API access are separate integrations. A source-matching quote does not guarantee a correct interpretation.
-
-## Run the project page locally
-
-No install or build is required for the introduction page. From the repository root:
+Use **Node.js 22.x, at least 22.12.0**, and npm. No ThreadLatch account or extra provider API key is required.
 
 ```sh
-python -m http.server 4173 --directory site
+git clone --branch codex/implement-v1 https://github.com/deAYS/threadlatch.git
+cd threadlatch
+npm ci
+npm run build:cli
+node dist-cli/cli/index.js setup --project /path/to/project --agent both
 ```
 
-Open `http://localhost:4173`. Application setup instructions will be added when the application exists.
+Replace the project path and quote paths with spaces. Choose codex or claude-code to install one skill. Setup preserves existing memory, instruction files and unrelated skills, and safely adds the private .threadlatch/ directory to ignore rules.
 
-## Development and publishing
+The agent also needs access to the CLI. Build a local tarball with `npm pack`, then install it as a development dependency of your target project: `npm install --save-dev /path/to/threadlatch-0.1.0-preview.1.tgz`. The skill can use `node node_modules/threadlatch/dist-cli/cli/index.js`. Alternatively, make the CLI available on PATH with your normal npm installation. No published registry release is assumed. [Setup/update/removal guide](docs/ONBOARDING.md).
 
-- [Implementation plan](docs/superpowers/plans/2026-10-27-threadlatch.md)
-- [Implementation-session handoff](docs/SESSION-HANDOFF.md)
-- [GitHub Pages deployment guide](docs/GITHUB-PAGES.md)
-- [Privacy and data boundaries](docs/PRIVACY.md)
+Invoke **$threadlatch** in Codex or **/threadlatch** in Claude Code, then use:
 
-Please use synthetic conversations in public issues. Do not post private chats, API keys, or account credentials.
+- “Pick up where we left off.” / “Kaldığımız yerden devam et.”
+- “Remember this decision.” / “Bu kararı hatırla.”
+- “Show the latest changes.” / “Son değişiklikleri göster.”
+- “Prepare a handoff for another agent.” / “Başka ajana devretmek için hazırla.”
 
-## License
+The skill handles source files, JSON and proposal IDs, presents one concise batch review and saves the selected changes through the validated CLI. Natural-language selection depends on the host; explicit invocation is the fallback. Sources grant no tool permissions. Hidden chat history is not captured.
 
-[MIT](LICENSE). Independent project; the named providers do not endorse or sponsor ThreadLatch.
+## Optional browser
+
+Run `npm run dev` and open the displayed local URL ending in /threadlatch/. Open the synthetic example or create a project. Paste a conversation → preview roles and message selection → prepare an analysis request → give it to your AI tool → paste its JSON response → review → save selected changes. Nothing is sent automatically; the browser workflow includes copy/paste.
+
+Current memory, review, sources/history, manual edits, pinning and revision restoration share the CLI's rules. Markdown exports bounded current context; JSON preserves every source, revision and pending analysis. Duplicate browser imports open a separate project. CLI restore only initializes an empty memory directory. The stores do not silently synchronize.
+
+## Verification
+
+```sh
+npm run typecheck
+npm run lint
+npm test
+npm run build
+npm run test:package
+npx --no-install playwright install chromium
+npm run test:e2e
+```
+
+Windows/Node 22 package tests and real Chromium tests run locally. Linux/macOS checks run in CI; see the compatibility evidence and current PR checks for exact results. Tests cover source matching, examples/suggestions, stale revisions, replay, branches, immutable history, locks, symlinks, package assets, install/removal preservation, Unicode paths, reload/backup/restore, two-tab races, quota rollback, EN/TR, mobile layout and accessibility. The recorded Codex skill/CLI path and Muse prompt-2 extraction threshold passed; other host/provider tests and five first-time participants remain pending. Model accuracy is evaluated separately. [Exact results and pending gates](docs/evaluations/compatibility.md).
+
+## Data boundaries
+
+Memory stays in .threadlatch/ or IndexedDB. Storage is **unencrypted** and is not backup or device sync. Export JSON before clearing browser data or changing origins. AI services see the request when you or your agent explicitly give it to them. A matching quote verifies a substring, not its interpretation. Examples, suggestions, assumptions and ambiguous assent remain proposed; manual wording retains historical evidence without claiming that evidence verifies the new text.
+
+No analytics, remote fonts, automatic history capture, native provider APIs, hooks or MCP integration. [Privacy](docs/PRIVACY.md) · [Protocol](docs/protocol.md) · [Agent integration](docs/AGENT-INTEGRATION.md).
+
+The existing [Pages workflow](docs/GITHUB-PAGES.md) remains manual. Stable tagging and application publication require the remaining release checks. [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) · [MIT](LICENSE). Independent project; providers do not endorse it. Use synthetic conversations in public reports; never share private chats or credentials.

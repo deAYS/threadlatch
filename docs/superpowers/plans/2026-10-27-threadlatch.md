@@ -2,6 +2,8 @@
 
 > Teknik geliştirme planı. Uygulama ve CLI henüz yayınlanmadı; bu belgedeki hedef davranışlar tamamlanmış özellikler değildir. Public ürün özeti için `docs/ROADMAP.md` dosyasına bakın.
 
+> Uygulama güncellemesi (2026-10-29): CLI, ortak çekirdek, skill kurulumu ve EN/TR web önizlemesi kaynak kodda bulunuyor. Güncel kanıtlar [son doğrulama kaydında](../../evaluations/2026-10-29-release-readiness.md), görev durumu [IMPLEMENTATION-STATUS.md](../../IMPLEMENTATION-STATUS.md), açık sürüm koşulları ve erişim engelleri [compatibility.md](../../evaluations/compatibility.md) içinde izlenir. Aşağıdaki görev listesi özgün kabul sözleşmesidir; yayın veya sağlayıcı uyumluluğunun tamamlandığı anlamına gelmez.
+
 **Goal:** AI sohbetlerindeki kararları, düzeltmeleri ve açık soruları kaynak mesajlarıyla saklayan; değişimleri gösteren ve farklı AI araçlarına taşınabilir güncel bağlam üreten açık kaynak bir uygulama.
 
 **Architecture:** İlk sürüm ortak, platformdan bağımsız bir çekirdek üzerinde Node.js CLI ve statik React inceleme arayüzü sunar. Codex/Claude Code için kurulabilir skill'ler, kullanıcının günlük dildeki isteğini aynı CLI'ın doğrulanmış işlemlerine bağlar; yönlendirmeli kurulum dosya düzenlemeyi gereksiz kılar. CLI proje dosyalarında, tarayıcı IndexedDB'de saklar; ikisi aynı sürümlü JSON arşivini açık import/export ile taşır. Analizi mevcut ajan veya sohbet aracı yapar; öneriler kaynaklarıyla doğrulanıp incelenir. Coding-agent akışında tarayıcı zorunlu değildir. Doğrudan sağlayıcı API bağlantısı ve otomatik geçmiş toplama sonraki sürümlerdir.
