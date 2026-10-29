@@ -30,6 +30,8 @@ threadlatch doctor --project /path/to/project
 
 For a local dependency, replace threadlatch with node node_modules/threadlatch/dist-cli/cli/index.js. Doctor is read-only: runtime, built CLI, writable directory, archive, installed digests/version, and one next action. If the agent shell selects another Node version, use an explicit Node 22 executable; do not silently change global runtime settings.
 
+On Windows, a sandbox may run commands under a different account from your normal shell. If the correct user-scope Node executable itself returns “Access is denied”, check read/execute access for that sandbox identity on the trusted runtime directory. In the recorded Codex test, a permission correction limited to the installed Node 22 directory resolved this. Disabling the sandbox or changing permissions across the user profile is unnecessary. This runtime-launch problem occurs before ThreadLatch doctor can run.
+
 Status is read-only. Other opens repair a missing/damaged Markdown projection from canonical JSON. A write.lock is never removed automatically: close writers and inspect it before explicitly removing it. Preserve corrupt archives before recovery. JSON restore only initializes an empty memory directory; browser duplicate import opens a separate project. Nothing silently reconciles conflicting archives.
 
 ## Update or remove
@@ -45,8 +47,8 @@ The manifest records only owned relative paths, version and SHA-256 digests. Upd
 
 ## Browser-only route
 
-Run the web app locally and open the synthetic example. Paste a source, preview roles/selection, prepare the request, copy it to your chat tool, paste its JSON result, review and save. Export Markdown for current context and JSON for complete backup. The source remains plain text. This route requires no terminal after opening the hosted/local app, but provider interpretation accuracy and first-user usability are still pending evaluations.
+Run the web app locally and open the synthetic example. Paste a source, preview roles/selection, prepare the request, copy it to your chat tool, paste its JSON result, review and save. Export Markdown for current context and JSON for complete backup. The source remains plain text. “Analysis saved for review” means the request/proposal was saved; apply selected changes to create a new memory revision. This route requires no terminal after opening the local app. First-user usability and each chat tool's extraction coverage retain their separate test status.
 
 ## Release gates still open
 
-Complete Codex/Claude Code discovery and new-session trials, 30-scenario × 3 provider evaluations, inter-provider handoff, five first-time participants (target four successful cycles within five minutes), and manual accessibility/UX sign-off. Only actual evidence may close these gates. Do not advertise universal automatic skill selection or successful installation on an untested platform.
+The recorded Codex natural-language save/correction/new-session path, scoped Muse 30 × 3 extraction threshold and one Muse→Codex handoff passed. Claude Code model-driven cycles await eligible account access; authenticated ChatGPT chat testing, other provider coverage and remaining accessibility/UX review are pending. Run the [five-participant first-use protocol](evaluations/first-use-protocol.md) when people are available; target four unassisted useful cycles within five minutes. No participants have been tested. Only actual evidence may close these gates. Do not advertise universal automatic skill selection or successful installation on an untested platform.

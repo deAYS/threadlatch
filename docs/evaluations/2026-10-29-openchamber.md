@@ -1,5 +1,7 @@
 # OpenChamber model evaluation — 2026-10-29
 
+Historical prompt-1 baseline and guard investigation. The [later preview checkpoint](2026-10-29-release-readiness.md) records two fresh follow-up runs and the current prompt-2 extraction status. The failures and results below retain their original scope.
+
 ThreadLatch 0.1.0-preview.1, prompt `threadlatch-extraction-1`, baseline commit `c6ba358`. All sources and initial projects were synthetic. Calls used **OpenChamber's bundled OpenCode 2.0.15 executable**, not its graphical interface. Existing provider connections were used; no new credentials or subscriptions were created. This does not test the Claude Code host or a Claude model.
 
 ## Available model paths
