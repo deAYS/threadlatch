@@ -2,6 +2,8 @@
 
 **Status: implemented preview; host/provider verification is tracked separately in [compatibility evidence](evaluations/compatibility.md).** The CLI and browser share the core; Codex and Claude Code use one installable skill. Automated file/process and browser tests are not a blanket provider compatibility claim.
 
+OpenChamber's bundled OpenCode can also supply model-generated protocol responses using its existing provider connections. The [2026-10-29 evaluation](evaluations/2026-10-29-openchamber.md) covers Muse Spark 1.3 Contributor and attempted GLM access. This does not establish OpenCode skill installation/discovery or Claude Code compatibility; the v1 installer still targets Codex and Claude Code only.
+
 ## Shared local memory
 
 The first-release design uses the same versioned JSON schema and merge logic in a Node.js CLI and the browser. A coding-agent project has a `.threadlatch/` directory containing:

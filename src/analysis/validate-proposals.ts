@@ -54,6 +54,7 @@ export function validateProposalBatch(raw: string, request: AnalysisRequest): Va
         return m;
       });
       const clearUser = sources.length > 0 && sources.every((m) => clearUserStatement(m));
+      const crossBranch = request.sourceRevisionIds.some((r) => r !== request.baseRevisionId);
       if (c.item?.origin === 'manual')
         throw new Error('Model output cannot claim manual provenance.');
       if (c.item) {
@@ -76,11 +77,14 @@ export function validateProposalBatch(raw: string, request: AnalysisRequest): Va
         c.note =
           'Unresolved: an unapproved replacement cannot remove a current decision. ' + c.note;
       }
-      if (
-        c.operation !== 'add' &&
-        c.operation !== 'conflict' &&
-        request.sourceRevisionIds.some((r) => r !== request.baseRevisionId)
-      ) {
+      if (c.operation === 'add' && c.item?.status === 'active' && crossBranch) {
+        c.item.status = 'proposed';
+        c.note = ('Unresolved: source belongs to another revision branch. ' + c.note).slice(
+          0,
+          4000,
+        );
+      }
+      if (c.operation !== 'add' && c.operation !== 'conflict' && crossBranch) {
         c.operation = 'conflict';
         c.note = 'Unresolved: source belongs to another revision branch. ' + c.note;
       }

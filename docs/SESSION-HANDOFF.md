@@ -2,11 +2,13 @@
 
 Repository: <https://github.com/deAYS/threadlatch>
 
-## Current implementation checkpoint — 2026-10-27
+## Current implementation checkpoint — 2026-10-29
 
 The source now contains the shared protocol/merge engine, file and IndexedDB adapters, Node CLI, skill installer/setup/doctor and optional EN/TR React review app. Read [implementation status](IMPLEMENTATION-STATUS.md) and [verification evidence](evaluations/compatibility.md) before continuing. The historical readiness notes below describe the starting point, not the current code inventory. The stable release is still incomplete: real provider/host cycles and participant trials remain open; three-platform CI passed. No application deployment or stable tag has been made.
 
-Use Node 22.x, at least 22.12.0. The local host's other Node versions must not be mistaken for tested runtime support. Keep provider logs and personal work artifacts outside public commits. The CLI tarball includes skill assets; the web build includes neither the CLI nor install manifests.
+Real Codex save/new-session continuation passed after correcting scoped runtime execution access. The [OpenChamber model evaluation](evaluations/2026-10-29-openchamber.md) records 90 Muse outputs, one critical cross-branch baseline failure, its regression-driven guard fix, deterministic response replay and a passing Muse→CLI→Codex handoff. Muse remains experimental; attempted GLM access did not yield a completed extraction. Latest local checks passed 83 unit/integration tests, 8 Chromium E2E tests, typecheck/lint/build and installed-package lifecycle. Claude Code model-driven tests remain deferred for eligible account access.
+
+Use Node 22.x, at least 22.12.0. The local host's other Node versions must not be mistaken for tested runtime support. Keep private session/provider logs and personal work artifacts outside public commits; publish only reviewed synthetic evaluation evidence. The CLI tarball includes skill assets; the web build includes neither the CLI nor install manifests.
 
 Read `docs/superpowers/plans/2026-10-27-threadlatch.md` before implementing the application. This document records repository readiness and integration boundaries for contributors.
 

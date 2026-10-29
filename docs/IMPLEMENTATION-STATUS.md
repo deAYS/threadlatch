@@ -1,6 +1,6 @@
 # Implementation status
 
-Date: 2026-10-27. Version: 0.1.0-preview.1, unreleased. This is an implementation and verification record, not a claim that every first-release gate is complete. The [original plan](superpowers/plans/2026-10-27-threadlatch.md) remains the specification.
+Updated: 2026-10-29. Version: 0.1.0-preview.1, unreleased. This is an implementation and verification record, not a claim that every first-release gate is complete. The [original plan](superpowers/plans/2026-10-27-threadlatch.md) remains the specification.
 
 | Plan task | Implemented | Verification / remaining work |
 | --- | --- | --- |
@@ -10,9 +10,9 @@ Date: 2026-10-27. Version: 0.1.0-preview.1, unreleased. This is an implementatio
 | 4 — Merge | Explicit batch save, replacement/cancellation, replay protection, conflicts, manual edits and pins | Core regression tests and browser correction cycle |
 | 5 — Persistence/history | IndexedDB and local file adapters, CAS generation/revision checks, immutable history, atomic replacement, locks, full archive validation/remapping | Unit/process tests; real browser two-tab and quota rollback; corrupted backup rejection |
 | 6 — Handoff/EN/TR | Bounded escaped Markdown, explicit omissions/errors, JSON backup, EN/TR browser UI and clipboard fallback | Export/i18n tests, real browser English/Turkish workflows and responsive/axe checks |
-| 7 — Node CLI | init/status/request/import/apply/export, history/edit/restore, private pending files, instruction hints, separate CLI build | Spawned Node process round-trip/race; actual host write flow remains blocked/pending |
+| 7 — Node CLI | init/status/request/import/apply/export, history/edit/restore, private pending files, instruction hints, separate CLI build | Spawned process round-trip/race; real Codex save/new-session read and Muse-generated CLI replacement/cancellation passed; full host matrix remains open |
 | 8 — Skills/onboarding | One canonical skill, two project destinations, setup/doctor/install/update/uninstall, owned digests and preservation | Package installation/lifecycle verified on Windows, Ubuntu and macOS CI; real host gates remain |
-| 9 — Validation | Automated core/process/package tests and production-build Chromium E2E | Provider 30 × 3 evaluations, first-user trials, inter-provider handoff and manual UX sign-off remain open |
+| 9 — Validation | Automated core/process/package tests and production-build Chromium E2E | Muse 30 × 3 evaluation completed but experimental after a critical branch failure; guard fixed and responses replayed. One Muse→Codex handoff passed. Other provider/host gates, first-user trials and manual UX sign-off remain open |
 | 10 — Public release | EN/TR docs, protocol, contribution/security guidance, synthetic demo and CI definition | Three-platform CI passed; private reporting channel, stable release and application publication remain open; manual Pages workflow unchanged |
 
 ## Technical decisions
@@ -25,4 +25,4 @@ Date: 2026-10-27. Version: 0.1.0-preview.1, unreleased. This is an implementatio
 
 ## Release gates
 
-See [compatibility evidence](evaluations/compatibility.md) for actual results, concrete environment limitations and pending checks. Local verification currently includes 79 unit/integration tests and 8 real Chromium E2E tests, plus package lifecycle checks. The independent review resumed after a usage reset and delivered its consolidated findings. All seven Important findings were reproduced and fixed with regression tests; no Critical or Minor finding was raised. Do not mark the stable definition of done complete or publish the app while release gates remain unresolved. The public introduction and manual Pages workflow remain available separately.
+See [compatibility evidence](evaluations/compatibility.md) and the [2026-10-29 model evaluation](evaluations/2026-10-29-openchamber.md) for results and pending checks. Latest local verification includes 83 unit/integration tests and 8 real Chromium E2E tests, plus package lifecycle checks. The original independent review's seven Important findings were reproduced and fixed. Real Muse testing subsequently exposed cross-branch active additions; a new regression-driven guard fix passed a scoped independent review. Do not mark the stable definition of done complete or publish the app while release gates remain unresolved. The public introduction and manual Pages workflow remain available separately.

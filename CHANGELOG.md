@@ -8,5 +8,6 @@
 - Project-local Codex and Claude Code skill assets, setup/doctor, conflict-preserving install/update/removal.
 - Optional English/Turkish browser review with IndexedDB, history restore, explicit archive exchange and a synthetic example.
 - Automated core/process/package/Chromium checks and a three-platform CI definition. Existing manual Pages deployment preserved.
+- Cross-branch additions remain proposed even when model output labels them active; real Muse evaluation evidence and a reviewed Muse-to-Codex handoff are recorded separately.
 
-This is source preview work, not a published npm or stable release. Provider extraction evaluations, real host end-to-end compatibility, first-user trials and manual UX sign-off remain pending. See [evidence](docs/evaluations/compatibility.md).
+This is source preview work, not a published npm or stable release. Muse's first extraction evaluation remains experimental after a critical baseline failure; other provider/host coverage, first-user trials and manual UX sign-off remain incomplete. See [evidence](docs/evaluations/compatibility.md).

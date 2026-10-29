@@ -1,8 +1,8 @@
 # Compatibility and evaluation evidence
 
-Date: 2026-10-27. Version: 0.1.0-preview.1. Prompt: threadlatch-extraction-1. Sources and test projects are synthetic. No private session logs are committed.
+Updated: 2026-10-29. Version: 0.1.0-preview.1. Prompt: threadlatch-extraction-1. Sources and test projects are synthetic. No private session logs are committed. Historical checks below retain their original dates/commits; [the latest model evaluation](2026-10-29-openchamber.md) records new evidence and a guard fix.
 
-The 30-case fixture set includes 15 EN/15 TR cases, exactly 10 flagged critical cases and six malicious inputs. Each case records initial active concepts, the expected final active concept set, forbidden promotions, source branch and correction/cancellation operation. These are semantic expectations for a future real-provider review, not exact paraphrase matching. The automated candidate-status tests exercise deterministic role/intent guards; they do not claim to run a model or verify the full expected extraction set.
+The 30-case fixture set includes 15 EN/15 TR cases, exactly 10 flagged critical cases and six malicious inputs. Each case records initial active concepts, the expected final active concept set, forbidden promotions, source branch and correction/cancellation operation. These are semantic expectations for real-provider review, not exact paraphrase matching. Muse's first real run is recorded separately below. The automated candidate-status tests exercise deterministic role/intent guards; they do not claim to run a model or verify the full expected extraction set.
 
 ## Automated local checks
 
@@ -22,8 +22,8 @@ Remote [CI run 40465377568](https://github.com/deAYS/threadlatch/actions/runs/40
 | Claude Code 2.1.308 | Official stable native installation completed on Windows; `--version` and `doctor` passed with no installation issues. Subscription login requires eligible account access, which is unavailable for this test session. | Installation verified; real discovery, explicit invocation, natural selection, save/correction and handoff **deferred pending eligible account access** |
 | ChatGPT | No real 30-scenario extraction run performed. | Not yet tested |
 | Claude | No real extraction run performed. | Not yet tested |
-| Muse | Target product still needs confirmation. | Not yet tested |
-| GLM / Z.AI | No real extraction run performed. | Not yet tested |
+| Muse Spark 1.3 Contributor via OpenChamber's OpenCode 2.0.15 | `meta/muse-spark-1.3-contributor`: 30 scenarios × 3, correct sets 28/30, 28/30, 27/30; one critical baseline branch failure. Application guard fixed; stored-response replay blocks it. | **Experimental**; replay is not a fresh provider evaluation. [Report](2026-10-29-openchamber.md) |
+| GLM / Z.AI via OpenChamber's OpenCode 2.0.15 | NVIDIA GLM 5.3 HTTP 410; OpenCode free GLM Flash HTTP 429; NVIDIA GLM Flash had no completed response within 90 seconds. | Access checks only; extraction not yet tested. [Report](2026-10-29-openchamber.md) |
 
 The Codex runs used the existing authenticated default model configuration; model identity was not captured as a controlled evaluation variable. They are not a completed model evaluation. The initial blocked attempts changed no global runtime or permission settings; the later scoped runtime access correction is described below.
 
@@ -35,9 +35,9 @@ A separate fresh Codex session received a natural Turkish continuation request, 
 
 ## Gates still pending
 
-- 30 synthetic scenarios (15 EN, 15 TR), three repetitions per provider, recording valid JSON rate, valid evidence, expected item sets and critical false promotions. Threshold: at least 27/30 correct sets and no critical active-decision promotion in any repetition of the ten critical cases. Deterministic guard tests do not substitute for this.
+- Complete provider evaluations: Muse's first 30 × 3 run failed the critical branch-isolation gate and remains experimental. Other providers and a fresh full Muse run remain pending. Threshold: at least 27/30 correct sets and no critical active-decision promotion in any repetition of the ten critical cases. Deterministic guard tests and stored-response replay do not substitute for a fresh model run.
 - Complete the real host matrix with controlled version/model details: Codex has passed one explicit save/retry scenario and natural Turkish new-session continuation; decision replacement/cancellation and all Claude Code model-driven cycles remain pending.
-- Handoff between at least two actual AI tools without reviving cancelled decisions.
+- Broaden the tool handoff matrix. One Muse-generated, reviewed CLI replacement/cancellation → fresh Codex reader scenario passed without reviving cancelled decisions; other directions and host-skill paths remain pending.
 - Five first-time participants with supported runtime/agent; target four useful cycles within five minutes without coaching. No participants have been tested.
 - Manual keyboard/assistive-technology review and remaining first-user UX sign-off.
 - Establish a private vulnerability reporting channel (GitHub reports it disabled as of 2026-10-27) and verify remote release/Pages settings before stable publication.
