@@ -1,5 +1,5 @@
 import { expect, it, vi } from 'vitest';
-import { mkdtemp, readFile, writeFile } from 'node:fs/promises';
+import { mkdtemp, readFile, writeFile, symlink, realpath } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { parseArchive } from '../../src/core/schema.js';
@@ -22,7 +22,9 @@ vi.mock('node:fs/promises', async (original) => {
 });
 
 it('canonical disk failure leaves generation and pending state unchanged and allows a single retry', async () => {
-  const root = await mkdtemp(join(tmpdir(), 'canonical-fault-'));
+  const target = await mkdtemp(join(tmpdir(), 'canonical-fault-'));
+  const root = join(await mkdtemp(join(tmpdir(), 'canonical-alias-')), 'project');
+  await symlink(target, root, process.platform === 'win32' ? 'junction' : 'dir');
   let output = '',
     error = '';
   const io: CliIO = {
@@ -43,7 +45,7 @@ it('canonical disk failure leaves generation and pending state unchanged and all
   await writeFile(join(root, 'source.txt'), 'User: Use SQLite.');
   const path = join(root, '.threadlatch/project.json');
   const before = await readFile(path, 'utf8');
-  fault.canonicalTarget = path;
+  fault.canonicalTarget = await realpath(path);
   expect(await run('request', '--input', 'source.txt', '--format', 'role-tagged')).toBe(3);
   expect(error).toContain('ENOSPC');
   expect(output).toBe('');
@@ -53,7 +55,7 @@ it('canonical disk failure leaves generation and pending state unchanged and all
   expect(prepared.requests).toHaveLength(1);
   await writeFile(join(root, 'reply.json'), JSON.stringify(proposal(prepared.requests[0])));
   const canonical = await readFile(path, 'utf8');
-  fault.canonicalTarget = path;
+  fault.canonicalTarget = await realpath(path);
   expect(
     await run('import', '--request', prepared.requests[0].requestId, '--input', 'reply.json'),
   ).toBe(3);
