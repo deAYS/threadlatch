@@ -6,11 +6,11 @@ The introduction in `site/` is a static HTML/CSS page. It has no analytics, cook
 
 GitHub serves the page and may process connection information under its own policies. A static page with no analytics does not mean its hosting provider receives no request metadata.
 
-## Planned application
+## Preview application
 
-The application is not yet released. The first-release design specifies local project files for the Node.js CLI and local browser storage for the optional review interface, connected by explicit archive export/import. The application will not automatically send conversations to an AI service. When you give an analysis request to your coding agent or paste one into another service, that service processes the content according to its own policies.
+The preview uses local project files for the Node.js CLI and IndexedDB for the optional review interface, connected by explicit archive export/import. It does not automatically send conversations to an AI service. When you give an analysis request to your coding agent or paste one into another service, that service processes the content according to its own policies. The browser requests only its own static assets; it has no analytics, remote fonts or remote image rendering. Private content is not placed in URLs or application logs.
 
-The CLI's planned `.threadlatch/` directory can contain source messages and memory history. It must be excluded from Git by default. A readable Markdown projection is not permission to publish private content. Sharing memory or source excerpts is an explicit user choice; the CLI does not silently sync to the browser or cloud.
+The CLI's `.threadlatch/` directory can contain source messages and memory history. Initialization safely adds it to ignore rules by default. Do not place private input files elsewhere in a public tree; the skill uses the ignored pending directory. A readable Markdown projection is not permission to publish private content. Sharing memory or source excerpts is an explicit user choice; the CLI does not silently sync to the browser or cloud.
 
 Browser storage is not encrypted backup or device synchronization. Browser cleanup, private browsing, changing origin, and storage failures can remove local data. Full JSON backups must be saved separately. Backups may contain private conversations; do not commit them to this public repository.
 

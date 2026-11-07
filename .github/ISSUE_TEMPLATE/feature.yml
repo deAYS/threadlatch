@@ -1,0 +1,10 @@
+name: Feature request
+description: Describe a project-memory workflow that needs improvement
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: User need
+      description: What are you trying to do? Use synthetic examples and explain the current friction.
+    validations:
+      required: true

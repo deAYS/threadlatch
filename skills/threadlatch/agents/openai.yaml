@@ -1,0 +1,4 @@
+interface:
+  display_name: "ThreadLatch"
+  short_description: "Source-linked memory and project handoffs"
+  default_prompt: "Use $threadlatch to pick up where we left off."
