@@ -1,6 +1,8 @@
 import { access, readFile } from 'node:fs/promises';
 import { constants } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { spawnSync } from 'node:child_process';
+import { resolveCliRunner } from './cli-runner.js';
 import { FileProjectRepository, safePath } from '../storage/file-projects.js';
 import { readInstallManifest, digest, VERSION } from './install-skills.js';
 export function supportedRuntime(version = process.versions.node) {
@@ -12,6 +14,7 @@ export type SetupReport = {
   version: string;
   checks: Array<{ name: string; ok: boolean; action: string }>;
   nextAction: string;
+  runner: { node: string; cli: string } | null;
 };
 export async function inspectSetup(root: string): Promise<SetupReport> {
   const checks: SetupReport['checks'] = [
@@ -31,6 +34,23 @@ export async function inspectSetup(root: string): Promise<SetupReport> {
       action: 'Build the source package with npm run build:cli, or reinstall the tested tarball.',
     });
   }
+  let runnerOk = false;
+  const runner = await resolveCliRunner(root);
+  if (runner) {
+    const result = spawnSync(process.execPath, [runner, 'version'], {
+      cwd: root,
+      encoding: 'utf8',
+      timeout: 5000,
+      windowsHide: true,
+    });
+    runnerOk = result.status === 0 && result.stdout?.trim() === VERSION;
+  }
+  checks.push({
+    name: 'CLI access from project',
+    ok: runnerOk,
+    action:
+      'Make the tested CLI available in this agent session on PATH, or install the local tarball as the project dependency. Then run doctor again from that session.',
+  });
   try {
     await access(root, constants.W_OK);
     checks.push({ name: 'Project writable', ok: true, action: '' });
@@ -85,6 +105,7 @@ export async function inspectSetup(root: string): Promise<SetupReport> {
     });
   }
   return {
+    runner: runner ? { node: process.execPath, cli: runner } : null,
     ok: checks.every((c) => c.ok),
     version: VERSION,
     checks,

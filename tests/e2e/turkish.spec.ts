@@ -39,7 +39,7 @@ test('Turkish source/review/save/handoff works through the same protocol', async
   };
   await page.getByLabel('Analiz sonucu').fill(JSON.stringify(result));
   await page.getByRole('button', { name: 'Sonucu doğrula', exact: true }).click();
-  await page.getByRole('button', { name: 'Güvenli değişiklikleri seç', exact: true }).click();
+  await page.getByRole('button', { name: 'Yarışmayan değişiklikleri seç', exact: true }).click();
   await page.getByRole('button', { name: 'Seçili değişiklikleri kaydet', exact: true }).click();
   await expect(page.getByTestId('memory-item')).toContainText('Belleği yerel dosyada sakla.');
   await page.getByRole('button', { name: 'Aktar ve devret', exact: true }).click();

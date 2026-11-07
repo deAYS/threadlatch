@@ -1,6 +1,7 @@
 import { Dexie, type Table } from 'dexie';
 import { parseArchive, serializeArchive, type ProjectArchive } from '../core/schema.js';
 import { assertTransition } from '../core/workflow.js';
+import { WorkflowError } from '../core/errors.js';
 export class BrowserProjectRepository {
   db: Dexie;
   private archives: Table<ProjectArchive, string>;
@@ -30,7 +31,10 @@ export class BrowserProjectRepository {
         current.project.currentRevisionId !== expectedRevisionId ||
         current.project.generation !== valid.project.generation
       )
-        throw new Error('Revision conflict. Reload current memory and review again.');
+        throw new WorkflowError(
+          'stale_revision',
+          'Revision conflict. Reload current memory and review again.',
+        );
       assertTransition(current, valid);
       valid.project.generation++;
       serializeArchive(valid);

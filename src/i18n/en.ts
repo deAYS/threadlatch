@@ -1,4 +1,63 @@
 export const en = {
+  handoff_budget:
+    'Required memory exceeds the handoff budget. Narrow the handoff scope or choose 24,000 characters; nothing was silently dropped.',
+  requestWaiting: 'Awaiting reply',
+  requestReady: 'Ready to review',
+  requestPartial: 'Partially applied',
+  requestApplied: 'Applied',
+  requestStale: 'Needs reanalysis',
+  partialHelp: 'Unselected changes remain in history.',
+  reanalysisHelp:
+    'Prepare a new analysis of the same source against current memory before saving any remaining changes.',
+  scopeHelp: 'Scope changes affect the next prepared request. This saved request stays unchanged.',
+  selectHelp:
+    'Automatic selection skips competing alternatives. Review meaning and sources before saving.',
+  selectedCount: 'selected',
+  searchMemory: 'Search memory',
+  filterStatus: 'Filter by status',
+  filterKind: 'Filter by type',
+  all: 'All',
+  visibleCount: 'items shown',
+  noMatches: 'No memory matches these filters.',
+  clearFilters: 'Clear filters',
+  sourceTitle: 'Source title (optional)',
+  stepSource: 'Choose source',
+  stepRequest: 'Give the request to your AI',
+  stepReply: 'Bring back its reply',
+  stepSave: 'Review and save',
+  stepsLabel: 'Analysis steps',
+  copyRequest: 'Copy request for your AI',
+  requestDetails: 'Request text and technical details',
+  requestCopied: 'Request copied. Give it to your AI, then paste its reply below.',
+  historicalHelp:
+    'Historical item. Inspect its original status and sources here; use a new correction or restore a revision to change current memory.',
+  historicalView: 'Inspect history',
+  unknownRoles:
+    'Some speakers are unknown. Assign a role when known; ambiguous statements cannot become approved decisions.',
+  technicalDetails: 'Technical details',
+  fixReply: 'Return to reply',
+  reviewSource: 'Return to source',
+  invalid_json: 'Invalid JSON. Paste the complete response again; your current reply is retained.',
+  invalid_proposal:
+    'The reply does not match this request. Ask your AI to correct the response using the original request and exact source quotes.',
+  invalid_archive:
+    'This backup is not a supported archive. Choose a complete ThreadLatch JSON backup.',
+  source_size: 'The source exceeds 1 MiB. Select a smaller excerpt; your draft is retained.',
+  analysis_size:
+    'The request exceeds 24,000 characters. Select fewer source messages or narrow the memory scope; nothing was truncated.',
+  input_size:
+    'This input exceeds its size or depth limit. Use a smaller complete file or response.',
+  empty_source: 'Add a conversation excerpt before previewing the source.',
+  stale_revision:
+    'Revision conflict or outdated analysis. Reload current memory, then prepare a new analysis. Your drafts are retained.',
+  project_lock:
+    'Another writer holds the project lock. Close other writers and inspect the lock before explicitly removing it.',
+  quota:
+    'Device storage is full. Download a JSON backup, free storage, then retry. Your draft is retained.',
+  invalid_scope:
+    'Some selected memory items are no longer current. Review the scope and prepare a new analysis.',
+  operation_failed:
+    'The operation failed. Your drafts are retained. Review the details and retry after resolving the problem.',
   language: 'Language',
   memory: 'Current memory',
   review: 'Review changes',
@@ -30,7 +89,9 @@ export const en = {
   pending: 'Pending request',
   copy: 'Copy text',
   copied: 'Copied',
-  selectSafe: 'Select safe changes',
+  selectSafe: 'Select noncompeting changes',
+  chooseAlternative:
+    'Alternatives for the same memory item. Review these together and select one; uncheck it before choosing another.',
   save: 'Save selected changes',
   sourceMatched: 'Source matched · meaning needs review',
   before: 'Before',
@@ -65,6 +126,7 @@ export const en = {
   pin: 'Pin item',
   unpin: 'Unpin item',
   manualNotice: 'Manual wording; quoted sources are historical, not proof of this text.',
+  manualReview: 'Pinned or manually edited item. Review and correct the current memory manually.',
   delete: 'Delete project',
   deleteConfirm: 'Delete permanently',
   deleteHelp:

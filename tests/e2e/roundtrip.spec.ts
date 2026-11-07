@@ -33,7 +33,7 @@ test('source → analysis → review → save → reload → correction → back
   };
   await page.getByLabel('Analysis result').fill(JSON.stringify(batch));
   await page.getByRole('button', { name: 'Validate result', exact: true }).click();
-  await page.getByRole('button', { name: 'Select safe changes', exact: true }).click();
+  await page.getByRole('button', { name: 'Select noncompeting changes', exact: true }).click();
   await page.getByRole('button', { name: 'Save selected changes', exact: true }).click();
   await expect(page.getByTestId('memory-item')).toContainText('Use SQLite.');
   await page.reload();
@@ -60,7 +60,7 @@ test('source → analysis → review → save → reload → correction → back
   };
   await page.getByLabel('Analysis result').fill(JSON.stringify(batch));
   await page.getByRole('button', { name: 'Validate result', exact: true }).click();
-  await page.getByRole('button', { name: 'Select safe changes', exact: true }).click();
+  await page.getByRole('button', { name: 'Select noncompeting changes', exact: true }).click();
   await page.getByRole('button', { name: 'Save selected changes', exact: true }).click();
   await expect(page.getByTestId('memory-item')).toContainText('Use PostgreSQL.');
   await page.getByRole('button', { name: 'Export & handoff', exact: true }).click();

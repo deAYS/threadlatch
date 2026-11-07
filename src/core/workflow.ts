@@ -8,6 +8,7 @@ import {
 import { createAnalysisRequest } from '../analysis/request.js';
 import { validateProposalBatch } from '../analysis/validate-proposals.js';
 import { applyChanges } from './apply-changes.js';
+import { WorkflowError } from './errors.js';
 
 export function addConversationRequest(
   archive: ProjectArchive,
@@ -47,11 +48,11 @@ export function importProposals(archive: ProjectArchive, requestId: string, raw:
   const req = archive.requests.find((r) => r.requestId === requestId);
   if (!req) throw new Error('Unknown request.');
   if (archive.project.currentRevisionId !== req.baseRevisionId)
-    throw new Error('Stale revision. Prepare a new analysis.');
+    throw new WorkflowError('stale_revision', 'Stale revision. Prepare a new analysis.');
   if (archive.proposals.some((b) => b.requestId === requestId))
     throw new Error('This request already has a proposal. Prepare a new request to reanalyze.');
   const result = validateProposalBatch(raw, req);
-  if (!result.ok) throw new Error(result.errors.join(' '));
+  if (!result.ok) throw new WorkflowError(result.code, result.errors.join(' '));
   const next = structuredClone(archive);
   next.proposals.push(result.batch);
   return { archive: next, result };
@@ -61,7 +62,7 @@ export function applyProposals(archive: ProjectArchive, requestId: string, selec
     batch = archive.proposals.find((b) => b.requestId === requestId);
   if (!req || !batch) throw new Error('Import a valid proposal first.');
   const validated = validateProposalBatch(JSON.stringify(batch), req);
-  if (!validated.ok) throw new Error(validated.errors.join(' '));
+  if (!validated.ok) throw new WorkflowError(validated.code, validated.errors.join(' '));
   return appendRevision(archive, applyChanges(currentRevision(archive), validated.batch, selected));
 }
 export function appendRevision(archive: ProjectArchive, revision: Revision) {

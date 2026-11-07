@@ -1,11 +1,12 @@
 import { id, type MemoryItem, type Revision, type ProposalBatch } from './schema.js';
+import { WorkflowError } from './errors.js';
 export function applyChanges(
   current: Revision,
   batch: ProposalBatch,
   selectedProposalIds: string[],
 ): Revision {
   if (batch.baseRevisionId !== current.id)
-    throw new Error('Stale revision. Reanalyze against current memory.');
+    throw new WorkflowError('stale_revision', 'Stale revision. Reanalyze against current memory.');
   if (
     !selectedProposalIds.length ||
     new Set(selectedProposalIds).size !== selectedProposalIds.length ||

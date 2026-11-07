@@ -25,7 +25,14 @@ async function run(root: string, ...args: string[]) {
 it('uses spawned Node processes for setup, source review, competing saves, and browser round-trip', async () => {
   const root = await mkdtemp(join(tmpdir(), 'roundtrip-ü space-'));
   expect((await run(root, 'setup', '--agent', 'both')).code).toBe(0);
-  expect((await run(root, 'doctor')).code).toBe(0);
+  const doctor = await run(root, 'doctor');
+  // An absolute development CLI invocation does not make it available to the skill.
+  expect(doctor.code).toBe(2);
+  expect(
+    JSON.parse(doctor.stdout).checks.find(
+      (c: { name: string }) => c.name === 'CLI access from project',
+    ).ok,
+  ).toBe(false);
   await writeFile(join(root, 'source.txt'), 'User: Use SQLite.');
   expect(
     (await run(root, 'request', '--input', 'source.txt', '--format', 'role-tagged')).code,

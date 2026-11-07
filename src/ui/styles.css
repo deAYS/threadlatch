@@ -46,6 +46,9 @@ button:disabled {
   cursor: default;
 }
 button.primary {
+  /* A recovery action can become primary after reload; don't fade its background
+     while the foreground has already changed to light text. */
+  transition: none;
   background: var(--ink);
   color: var(--paper);
   border-color: var(--ink);
@@ -54,6 +57,7 @@ button.primary:hover:not(:disabled) {
   background: #34473f;
 }
 button.secondary {
+  transition: none;
   background: var(--accent);
   border-color: var(--accent);
   color: #fff;
@@ -919,6 +923,141 @@ footer span:last-child {
 }
 .sidebar nav button span {
   opacity: 1;
+}
+/* Keep the notebook identity while making review controls readable and reachable. */
+summary {
+  font-size: 14px;
+}
+.mono,
+.privacy-note,
+.kind,
+.pill {
+  font-size: 12px;
+}
+.item-meta {
+  font-size: 13px;
+}
+.item-actions button {
+  font-size: 13px;
+  padding: 9px 12px;
+}
+.diff-before span,
+.diff-after span {
+  font-size: 12px;
+}
+.flow-steps {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  padding: 0;
+  gap: 12px;
+  border-bottom: 1px solid var(--line);
+  margin: 0 0 28px;
+}
+.flow-steps li {
+  font-size: 13px;
+  padding: 12px 0 18px;
+  border-bottom: 3px solid transparent;
+}
+.flow-steps li[aria-current] {
+  border-color: var(--green);
+  font-weight: 700;
+}
+.flow-steps li span {
+  display: block;
+  font: 24px var(--serif);
+  margin-bottom: 8px;
+}
+.memory-filters {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 16px;
+  padding: 0 0 12px;
+}
+.memory-filters input,
+.memory-filters select {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+}
+.request-heading {
+  margin: 24px 0 16px;
+}
+.request-heading h2 {
+  font: 28px/1.4 var(--serif);
+  overflow-wrap: anywhere;
+}
+.request-action,
+.reply-heading {
+  margin-top: 30px;
+}
+.request-technical {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+.alternative-note,
+.recovery-note {
+  background: #f5eddb;
+  border-left: 3px solid #a58337;
+  padding: 12px 16px;
+}
+button,
+summary,
+.file-button,
+.check-line {
+  min-height: 44px;
+}
+.check-line {
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+.draft-message .form-row label,
+.draft-message button,
+.history-rail button,
+.page-heading > button,
+.backup-box button,
+.file-button {
+  font-size: 13px;
+}
+.pill {
+  display: inline-block;
+  line-height: 1.6;
+}
+@media (max-width: 700px) {
+  .flow-steps {
+    grid-template-columns: 1fr 1fr;
+    gap: 0 16px;
+  }
+  .memory-filters {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .memory-filters label:first-child {
+    grid-column: 1 / -1;
+  }
+  .review-toolbar {
+    flex-wrap: wrap;
+  }
+  .review-toolbar button {
+    font-size: 13px;
+  }
+  .request-heading h2 {
+    font-size: 24px;
+  }
+  .sidebar-bottom {
+    flex-wrap: wrap;
+  }
+  .sidebar-bottom select {
+    margin-left: 0;
+  }
+  .local-note {
+    font-size: 12px;
+  }
+  .privacy-note {
+    display: block;
+    flex-basis: 100%;
+    margin: 4px 0 0;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   * {

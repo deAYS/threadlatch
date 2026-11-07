@@ -23,8 +23,22 @@ import { manualEdit, restoreSnapshot, resolveConflict } from '../core/apply-chan
 import { buildHandoff } from '../export/handoff.js';
 import { dictionaries, type Language, type TranslationKey } from '../i18n/index.js';
 import { createOperationQueue } from './operation-queue.js';
+import { reviewState } from './review-state.js';
+import { WorkflowError, errorCode, type ErrorCode } from '../core/errors.js';
 const repo = new BrowserProjectRepository();
 type View = 'memory' | 'review' | 'sources' | 'export' | 'import';
+type SourceDraft = {
+  source: string;
+  title: string;
+  format: ImportDraft['format'];
+  draft: ImportDraft | null;
+  base: string;
+  included: number[];
+  cursors: Record<number, number>;
+  memoryScope: string[] | null;
+  handoffScope: string[] | null;
+  requestId: string;
+};
 function download(name: string, text: string, type: string) {
   const url = URL.createObjectURL(new Blob([text], { type }));
   const link = document.createElement('a');
@@ -94,10 +108,11 @@ export function App() {
     [archive, setArchive] = useState<ProjectArchive | null>(null);
   const [view, setView] = useState<View>('memory'),
     [projectName, setProjectName] = useState(''),
-    [error, setError] = useState(''),
+    [error, setError] = useState<{ code: ErrorCode; details: string } | null>(null),
     [notice, setNotice] = useState(''),
     [busy, setBusy] = useState(false);
   const [source, setSource] = useState(''),
+    [sourceTitle, setSourceTitle] = useState(''),
     [format, setFormat] = useState<ImportDraft['format']>('plain'),
     [draft, setDraft] = useState<ImportDraft | null>(null),
     [base, setBase] = useState('');
@@ -107,6 +122,12 @@ export function App() {
     [resultRaw, setResultRaw] = useState(''),
     [selected, setSelected] = useState<string[]>([]),
     [showInactive, setShowInactive] = useState(false);
+  const [search, setSearch] = useState(''),
+    [statusFilter, setStatusFilter] = useState('all'),
+    [kindFilter, setKindFilter] = useState('all');
+  const replyDrafts = useRef<Record<string, string>>({});
+  const sourceDrafts = useRef<Record<string, SourceDraft>>({});
+  const [copiedRequestId, setCopiedRequestId] = useState('');
   const [budget, setBudget] = useState<8000 | 24000>(8000),
     [includeEvidence, setIncludeEvidence] = useState(false),
     [editItem, setEditItem] = useState<MemoryItem | null>(null),
@@ -121,6 +142,7 @@ export function App() {
   const request = archive?.requests.find((r) => r.requestId === requestId),
     batch = archive?.proposals.find((b) => b.requestId === requestId);
   const diff = revision && batch ? proposeDiff(revision, batch) : [];
+  const review = archive && request ? reviewState(archive, request) : null;
   const handoff = revision
     ? buildHandoff(revision, {
         maxCodePoints: budget,
@@ -128,16 +150,50 @@ export function App() {
         itemIds: handoffScope ?? undefined,
       })
     : null;
+  function rememberSource() {
+    if (!archive) return;
+    sourceDrafts.current[archive.project.id] = {
+      source,
+      title: sourceTitle,
+      format,
+      draft,
+      base,
+      included,
+      cursors,
+      memoryScope,
+      handoffScope,
+      requestId,
+    };
+  }
   function choose(a: ProjectArchive) {
+    rememberSource();
+    const savedDraft = sourceDrafts.current[a.project.id];
     setArchive(a);
     localStorage.setItem('threadlatch-project', a.project.id);
-    setBase(a.project.currentRevisionId);
-    setRequestId(a.requests.at(-1)?.requestId ?? '');
+    setSource(savedDraft?.source ?? '');
+    setSourceTitle(savedDraft?.title ?? '');
+    setFormat(savedDraft?.format ?? 'plain');
+    setBase(savedDraft?.base ?? a.project.currentRevisionId);
+    const activeRequestId = a.requests.some((r) => r.requestId === savedDraft?.requestId)
+      ? savedDraft!.requestId
+      : (a.requests.at(-1)?.requestId ?? '');
+    setRequestId(activeRequestId);
     setSelected([]);
-    setResultRaw('');
-    setDraft(null);
-    setMemoryScope(null);
-    setHandoffScope(null);
+    setResultRaw(replyDrafts.current[activeRequestId] ?? '');
+    setDraft(savedDraft?.draft ?? null);
+    setIncluded(savedDraft?.included ?? []);
+    setCursors(savedDraft?.cursors ?? {});
+    setEditItem(null);
+    setSearch('');
+    setStatusFilter('all');
+    setKindFilter('all');
+    const eligible = new Set(
+      currentRevision(a)
+        .items.filter((i) => ['active', 'proposed'].includes(i.status))
+        .map((i) => i.id),
+    );
+    setMemoryScope(savedDraft?.memoryScope?.filter((id) => eligible.has(id)) ?? null);
+    setHandoffScope(savedDraft?.handoffScope?.filter((id) => eligible.has(id)) ?? null);
     setView('memory');
   }
   async function refresh(activeId?: string) {
@@ -146,7 +202,17 @@ export function App() {
     const active = all.find(
       (a) => a.project.id === (activeId ?? localStorage.getItem('threadlatch-project')),
     );
-    if (active) choose(active);
+    if (active && archive?.project.id === active.project.id) {
+      if (archive.project.currentRevisionId !== active.project.currentRevisionId) setSelected([]);
+      setArchive(active);
+      const eligible = new Set(
+        currentRevision(active)
+          .items.filter((i) => ['active', 'proposed'].includes(i.status))
+          .map((i) => i.id),
+      );
+      setMemoryScope((scope) => (scope === null ? null : scope.filter((id) => eligible.has(id))));
+      setHandoffScope((scope) => (scope === null ? null : scope.filter((id) => eligible.has(id))));
+    } else if (active) choose(active);
     else if (all.length && activeId === undefined) choose(all[0]);
     else setArchive(null);
   }
@@ -154,12 +220,12 @@ export function App() {
     pendingOperations.current++;
     setBusy(true);
     await enqueue(async () => {
-      setError('');
+      setError(null);
       setNotice('');
       try {
         await work();
       } catch (e) {
-        setError(e instanceof Error ? e.message : 'Operation failed.');
+        setError({ code: errorCode(e), details: e instanceof Error ? e.message : '' });
       } finally {
         pendingOperations.current--;
         if (!pendingOperations.current) setBusy(false);
@@ -170,6 +236,14 @@ export function App() {
     if (!archive) return;
     const revisionChanged = next.project.currentRevisionId !== archive.project.currentRevisionId;
     await repo.save(next, archive.project.currentRevisionId);
+    if (revisionChanged) setSelected([]);
+    const eligible = new Set(
+      currentRevision(next)
+        .items.filter((item) => item.status === 'active' || item.status === 'proposed')
+        .map((item) => item.id),
+    );
+    setMemoryScope((scope) => (scope === null ? null : scope.filter((id) => eligible.has(id))));
+    setHandoffScope((scope) => (scope === null ? null : scope.filter((id) => eligible.has(id))));
     setArchive(next);
     setProjects((previous) => previous.map((p) => (p.project.id === next.project.id ? next : p)));
     setNotice(t(revisionChanged ? 'saved' : 'pendingSaved'));
@@ -181,11 +255,13 @@ export function App() {
     document.documentElement.lang = language;
     localStorage.setItem('threadlatch-language', language);
   }, [language]);
-  async function copy(text: string) {
+  async function copy(text: string, analysis = false) {
     try {
       await navigator.clipboard.writeText(text);
-      setNotice(t('copied'));
+      setNotice(t(analysis ? 'requestCopied' : 'copied'));
+      if (analysis) setCopiedRequestId(requestId);
     } catch {
+      if (analysis) document.getElementById('request-details')?.setAttribute('open', '');
       setNotice(
         language === 'tr'
           ? 'Aşağıdaki metni seçip elle kopyala.'
@@ -196,7 +272,8 @@ export function App() {
   async function importBackup(file?: File) {
     if (!file) return;
     await perform(async () => {
-      if (file.size > 10 * 1_048_576) throw new Error('Backup exceeds 10 MiB.');
+      if (file.size > 10 * 1_048_576)
+        throw new WorkflowError('input_size', 'Backup exceeds 10 MiB.');
       let a = parseArchive(await file.text());
       if (await repo.load(a.project.id)) a = await cloneArchive(a);
       await repo.create(a);
@@ -206,10 +283,7 @@ export function App() {
   }
   function startSource() {
     setView('import');
-    setDraft(null);
-    setSource('');
-    setBase(archive!.project.currentRevisionId);
-    setResultRaw('');
+    if (!source && !draft) setBase(archive!.project.currentRevisionId);
   }
   const sourceQuotes = (item: MemoryItem) =>
     item.evidence.map((e, n) => (
@@ -228,6 +302,15 @@ export function App() {
     ));
   const actionable =
     revision?.items.filter((i) => i.status === 'active' || i.status === 'proposed') ?? [];
+  const visibleItems =
+    revision?.items.filter(
+      (i) =>
+        (statusFilter === 'all'
+          ? showInactive || ['active', 'proposed'].includes(i.status)
+          : i.status === statusFilter) &&
+        (kindFilter === 'all' || i.kind === kindFilter) &&
+        i.text.toLocaleLowerCase(language).includes(search.toLocaleLowerCase(language)),
+    ) ?? [];
   const scopePicker = (
     title: TranslationKey,
     scope: string[] | null,
@@ -278,6 +361,7 @@ export function App() {
               const a = projects.find((p) => p.project.id === e.target.value);
               if (a) choose(a);
               else {
+                rememberSource();
                 setArchive(null);
                 setView('memory');
               }
@@ -300,7 +384,7 @@ export function App() {
               aria-current={view === v ? 'page' : undefined}
               onClick={() => {
                 setView(v);
-                setError('');
+                setError(null);
               }}
             >
               <span aria-hidden="true">0{i + 1}</span>
@@ -336,10 +420,42 @@ export function App() {
         {error && (
           <div className="error-box" role="alert">
             <strong>{t('error')}</strong>
-            <p>{error}</p>
-            <button onClick={() => void perform(() => refresh(archive?.project.id))}>
-              {t('reload')}
-            </button>
+            <p>{t(error.code)}</p>
+            <details>
+              <summary>{t('technicalDetails')}</summary>
+              <p>{error.details}</p>
+            </details>
+            <div className="button-row">
+              {['invalid_json', 'invalid_proposal', 'input_size'].includes(error.code) &&
+                view === 'review' &&
+                !batch && (
+                  <button onClick={() => document.getElementById('analysis-result')?.focus()}>
+                    {t('fixReply')}
+                  </button>
+                )}
+              {['source_size', 'empty_source', 'analysis_size'].includes(error.code) &&
+                view === 'import' && (
+                  <button onClick={() => document.getElementById('source-text')?.focus()}>
+                    {t('reviewSource')}
+                  </button>
+                )}
+              {error.code === 'quota' && archive && (
+                <button
+                  onClick={() =>
+                    download(
+                      'threadlatch-backup.json',
+                      serializeArchive(archive),
+                      'application/json',
+                    )
+                  }
+                >
+                  {t('backup')}
+                </button>
+              )}
+              <button onClick={() => void perform(() => refresh(archive?.project.id))}>
+                {t('reload')}
+              </button>
+            </div>
           </div>
         )}
         <div role="status" className="notice">
@@ -440,6 +556,51 @@ export function App() {
             </div>
             {view === 'memory' && (
               <section>
+                <div className="memory-filters">
+                  <label>
+                    {t('searchMemory')}
+                    <input
+                      type="search"
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                    />
+                  </label>
+                  <label>
+                    {t('filterStatus')}
+                    <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+                      <option value="all">{t('all')}</option>
+                      {(['active', 'proposed', 'superseded', 'rejected', 'resolved'] as const).map(
+                        (s) => (
+                          <option key={s} value={s}>
+                            {label(s)}
+                          </option>
+                        ),
+                      )}
+                    </select>
+                  </label>
+                  <label>
+                    {t('filterKind')}
+                    <select value={kindFilter} onChange={(e) => setKindFilter(e.target.value)}>
+                      <option value="all">{t('all')}</option>
+                      {(
+                        [
+                          'decision',
+                          'constraint',
+                          'assumption',
+                          'open_question',
+                          'context',
+                        ] as const
+                      ).map((s) => (
+                        <option key={s} value={s}>
+                          {label(s)}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                </div>
+                <p className="subtle">
+                  {visibleItems.length}/{revision!.items.length} {t('visibleCount')}
+                </p>
                 <label className="check-line">
                   <input
                     type="checkbox"
@@ -448,6 +609,20 @@ export function App() {
                   />
                   {t('showInactive')}
                 </label>
+                {!!revision!.items.length && !visibleItems.length && (
+                  <div className="empty-state">
+                    <p>{t('noMatches')}</p>
+                    <button
+                      onClick={() => {
+                        setSearch('');
+                        setStatusFilter('all');
+                        setKindFilter('all');
+                      }}
+                    >
+                      {t('clearFilters')}
+                    </button>
+                  </div>
+                )}
                 {!revision!.items.length && (
                   <div className="empty-state">
                     <h2>{t('noMemory')}</h2>
@@ -455,58 +630,63 @@ export function App() {
                   </div>
                 )}
                 <div className="memory-list">
-                  {revision!.items
-                    .filter((i) => showInactive || ['active', 'proposed'].includes(i.status))
-                    .map((item, index) => (
-                      <article
-                        key={item.id}
-                        className={'memory-item ' + item.status}
-                        data-testid="memory-item"
-                      >
-                        <div className="item-number mono">{String(index + 1).padStart(2, '0')}</div>
-                        <div className="item-body">
-                          <div className="item-meta">
-                            <span className="kind">{label(item.kind)}</span>
-                            <span className={'pill ' + item.status}>{label(item.status)}</span>
-                            <span>{label(item.origin)}</span>
-                            {item.pinned && <span>● {t('pin')}</span>}
-                          </div>
-                          <h2>{item.text}</h2>
-                          {item.origin === 'manual' && (
-                            <p className="subtle">{t('manualNotice')}</p>
-                          )}
-                          <details>
-                            <summary>
-                              {t('sourceDetails')} · {item.evidence.length}
-                            </summary>
-                            {sourceQuotes(item)}
-                          </details>
-                          <div className="item-actions">
-                            <button
-                              onClick={() => {
-                                setEditItem(item);
-                                setEditText(item.text);
-                                setEditStatus(item.status);
-                              }}
-                            >
-                              {t('manualEdit')}
-                            </button>
-                            <button
-                              onClick={() =>
-                                void perform(() =>
-                                  commit(
-                                    appendRevision(
-                                      archive,
-                                      manualEdit(revision!, item.id, { pinned: !item.pinned }),
-                                    ),
+                  {visibleItems.map((item, index) => (
+                    <article
+                      key={item.id}
+                      className={'memory-item ' + item.status}
+                      data-testid="memory-item"
+                    >
+                      <div className="item-number mono">{String(index + 1).padStart(2, '0')}</div>
+                      <div className="item-body">
+                        <div className="item-meta">
+                          <span className="kind">{label(item.kind)}</span>
+                          <span className={'pill ' + item.status}>{label(item.status)}</span>
+                          <span>{label(item.origin)}</span>
+                          {item.pinned && <span>● {t('pin')}</span>}
+                        </div>
+                        <h2>{item.text}</h2>
+                        {item.origin === 'manual' && <p className="subtle">{t('manualNotice')}</p>}
+                        <details>
+                          <summary>
+                            {t('sourceDetails')} · {item.evidence.length}
+                          </summary>
+                          {sourceQuotes(item)}
+                        </details>
+                        <div className="item-actions">
+                          <button
+                            onClick={() => {
+                              setEditItem(item);
+                              setEditText(item.text);
+                              setEditStatus(item.status);
+                            }}
+                          >
+                            {t(item.status === 'superseded' ? 'historicalView' : 'manualEdit')}
+                          </button>
+                          <button
+                            onClick={() =>
+                              void perform(() =>
+                                commit(
+                                  appendRevision(
+                                    archive,
+                                    manualEdit(revision!, item.id, { pinned: !item.pinned }),
                                   ),
-                                )
-                              }
-                            >
-                              {item.pinned ? t('unpin') : t('pin')}
-                            </button>
-                          </div>
-                          {editItem?.id === item.id && (
+                                ),
+                              )
+                            }
+                          >
+                            {item.pinned ? t('unpin') : t('pin')}
+                          </button>
+                        </div>
+                        {editItem?.id === item.id &&
+                          (item.status === 'superseded' ? (
+                            <div className="edit-form">
+                              <p>{t('historicalHelp')}</p>
+                              <p>
+                                {t('status')}: {label(item.status)}
+                              </p>
+                              <button onClick={() => setEditItem(null)}>{t('cancel')}</button>
+                            </div>
+                          ) : (
                             <form
                               className="edit-form"
                               onSubmit={(e) => {
@@ -553,10 +733,10 @@ export function App() {
                                 {t('cancel')}
                               </button>
                             </form>
-                          )}
-                        </div>
-                      </article>
-                    ))}
+                          ))}
+                      </div>
+                    </article>
+                  ))}
                 </div>
                 {revision!.conflicts
                   .filter((c) => !c.resolved)
@@ -589,7 +769,24 @@ export function App() {
             )}
             {view === 'import' && (
               <section className="flow-panel">
+                <ol className="flow-steps" aria-label={t('stepsLabel')}>
+                  {(['stepSource', 'stepRequest', 'stepReply', 'stepSave'] as const).map(
+                    (step, index) => (
+                      <li key={step} aria-current={index === 0 ? 'step' : undefined}>
+                        <span>{index + 1}</span>
+                        {t(step)}
+                      </li>
+                    ),
+                  )}
+                </ol>
                 <p className="lede small">{t('sourceHelp')}</p>
+                <label htmlFor="source-title">{t('sourceTitle')}</label>
+                <input
+                  id="source-title"
+                  maxLength={300}
+                  value={sourceTitle}
+                  onChange={(e) => setSourceTitle(e.target.value)}
+                />
                 <label className="file-button">
                   {t('sourceFile')}
                   <input
@@ -601,7 +798,8 @@ export function App() {
                       const f = e.target.files?.[0];
                       if (f)
                         void perform(async () => {
-                          if (f.size > 1_048_576) throw new Error('Source size exceeds 1 MiB.');
+                          if (f.size > 1_048_576)
+                            throw new WorkflowError('source_size', 'Source size exceeds 1 MiB.');
                           setSource(await f.text());
                           setDraft(null);
                         });
@@ -662,7 +860,7 @@ export function App() {
                   <div className="source-preview">
                     {draft.warnings.map((w) => (
                       <p className="subtle" key={w}>
-                        {w}
+                        {draft.warnings.includes(w) ? t('unknownRoles') : w}
                       </p>
                     ))}
                     {draft.messages.map((m, i) => (
@@ -728,7 +926,12 @@ export function App() {
                               { ...m, text: m.text.slice(at) },
                             );
                             setDraft({ ...draft, messages });
-                            setIncluded(messages.map((_, n) => n));
+                            setIncluded(
+                              included.flatMap((n) =>
+                                n < i ? [n] : n === i ? [i, i + 1] : [n + 1],
+                              ),
+                            );
+                            setCursors({});
                           }}
                         >
                           {t('split')}
@@ -736,6 +939,9 @@ export function App() {
                       </div>
                     ))}
                     {scopeControls}
+                    <p className="subtle">
+                      {included.length}/{draft.messages.length} {t('selectedCount')}
+                    </p>
                     <p className="subtle">{t('requestLimit')}</p>
                     <button
                       className="primary"
@@ -743,6 +949,12 @@ export function App() {
                       onClick={() =>
                         void perform(async () => {
                           const c = await finalizeImport(draft, archive.project.id, base);
+                          c.title =
+                            sourceTitle.trim() ||
+                            c.messages
+                              .find((_, i) => included.includes(i))!
+                              .text.trim()
+                              .slice(0, 100);
                           const prepared = addConversationRequest(
                             archive,
                             c,
@@ -751,6 +963,11 @@ export function App() {
                           );
                           await commit(prepared.archive);
                           setRequestId(prepared.request.requestId);
+                          setResultRaw('');
+                          setSource('');
+                          setSourceTitle('');
+                          setDraft(null);
+                          delete sourceDrafts.current[archive.project.id];
                           setView('review');
                           setSelected([]);
                         })
@@ -764,6 +981,23 @@ export function App() {
             )}
             {view === 'review' && (
               <section className="flow-panel">
+                <ol className="flow-steps" aria-label={t('stepsLabel')}>
+                  {(['stepSource', 'stepRequest', 'stepReply', 'stepSave'] as const).map(
+                    (step, index) => (
+                      <li
+                        key={step}
+                        aria-current={
+                          index === (batch ? 3 : copiedRequestId === requestId || resultRaw ? 2 : 1)
+                            ? 'step'
+                            : undefined
+                        }
+                      >
+                        <span>{index + 1}</span>
+                        {t(step)}
+                      </li>
+                    ),
+                  )}
+                </ol>
                 <p className="lede small">{t('bridgeHelp')}</p>
                 <label htmlFor="pending">{t('pending')}</label>
                 <select
@@ -771,28 +1005,34 @@ export function App() {
                   value={requestId}
                   onChange={(e) => {
                     setRequestId(e.target.value);
+                    setResultRaw(replyDrafts.current[e.target.value] ?? '');
                     setSelected([]);
                   }}
                 >
                   {archive.requests.map((r) => (
                     <option key={r.requestId} value={r.requestId}>
-                      {r.requestId.slice(0, 8)} · {r.baseRevisionId.slice(0, 8)}
+                      {reviewState(archive, r).title} · {reviewState(archive, r).date} ·{' '}
+                      {t(reviewState(archive, r).status)}
                     </option>
                   ))}
                 </select>
                 {request ? (
                   <>
-                    <label htmlFor="analysis-request">{t('analysisRequest')}</label>
-                    <p className="subtle">
-                      {t('excludedHistory')}: {request.excludedHistoryCount}
-                    </p>
-                    {request.omittedItemIds.length > 0 && (
-                      <p className="mono">
-                        {t('omittedMemory')}: {request.omittedItemIds.join(', ')}
-                      </p>
+                    <div className="request-heading">
+                      <h2>{review?.title}</h2>
+                      <span className="pill" data-testid="request-status">
+                        {review && t(review.status)}
+                        {review && review.total > 0 ? ` · ${review.applied}/${review.total}` : ''}
+                      </span>
+                    </div>
+                    {review?.status === 'requestPartial' && <p>{t('partialHelp')}</p>}
+                    {review?.stale && review.status !== 'requestApplied' && (
+                      <p className="recovery-note">{t('reanalysisHelp')}</p>
                     )}
+                    <p className="subtle">{t('scopeHelp')}</p>
                     {scopeControls}
                     <button
+                      className={review?.stale ? 'primary' : undefined}
                       disabled={busy}
                       onClick={() =>
                         void perform(async () => {
@@ -810,29 +1050,59 @@ export function App() {
                     >
                       {t('retryAnalysis')}
                     </button>
-                    <textarea
-                      id="analysis-request"
-                      readOnly
-                      rows={7}
-                      value={buildAnalysisPrompt(request)}
-                      spellCheck={false}
-                    />
-                    <button onClick={() => void copy(buildAnalysisPrompt(request))}>
-                      {t('copy')}
-                    </button>
+                    {!batch && !review?.stale && (
+                      <div className="request-action">
+                        <h2>2 · {t('stepRequest')}</h2>
+                        <button
+                          className="primary"
+                          onClick={() => void copy(buildAnalysisPrompt(request), true)}
+                        >
+                          {t('copyRequest')}
+                        </button>
+                      </div>
+                    )}
+                    <details id="request-details" className="request-technical">
+                      <summary>{t('requestDetails')}</summary>
+                      <p className="mono">
+                        {request.requestId} · {request.baseRevisionId}
+                      </p>
+                      <label htmlFor="analysis-request">{t('analysisRequest')}</label>
+                      <p className="subtle">
+                        {t('excludedHistory')}: {request.excludedHistoryCount}
+                      </p>
+                      {request.omittedItemIds.length > 0 && (
+                        <p className="mono">
+                          {t('omittedMemory')}: {request.omittedItemIds.join(', ')}
+                        </p>
+                      )}
+                      <textarea
+                        id="analysis-request"
+                        readOnly
+                        rows={7}
+                        value={buildAnalysisPrompt(request)}
+                        spellCheck={false}
+                      />
+                      <button onClick={() => void copy(buildAnalysisPrompt(request))}>
+                        {t('copy')}
+                      </button>
+                    </details>
                     {!batch && (
                       <>
+                        <h2 className="reply-heading">3 · {t('stepReply')}</h2>
                         <label htmlFor="analysis-result">{t('analysisResult')}</label>
                         <textarea
                           id="analysis-result"
                           rows={8}
                           value={resultRaw}
-                          onChange={(e) => setResultRaw(e.target.value)}
+                          onChange={(e) => {
+                            setResultRaw(e.target.value);
+                            replyDrafts.current[requestId] = e.target.value;
+                          }}
                           spellCheck={false}
                         />
                         <button
-                          className="secondary"
-                          disabled={busy}
+                          className="primary"
+                          disabled={busy || Boolean(review?.stale)}
                           onClick={() =>
                             void perform(async () => {
                               const imported = importProposals(archive, requestId, resultRaw);
@@ -851,13 +1121,15 @@ export function App() {
                 )}
                 {batch && (
                   <div className="review-diff">
+                    <h2>4 · {t('stepSave')}</h2>
+                    <p>{t('selectHelp')}</p>
                     <div className="review-toolbar">
                       <span>
-                        {diff.length} {t('changeCount')}
+                        {selected.length}/{diff.length} {t('selectedCount')}
                       </span>
                       <button
                         onClick={() =>
-                          setSelected(diff.filter((d) => d.selectable).map((d) => d.proposalId))
+                          setSelected(diff.filter((d) => d.autoSelectable).map((d) => d.proposalId))
                         }
                       >
                         {t('selectSafe')}
@@ -868,7 +1140,10 @@ export function App() {
                         <label className="check-line">
                           <input
                             type="checkbox"
-                            disabled={Boolean(d.blocked)}
+                            disabled={
+                              Boolean(d.blocked) ||
+                              d.alternativeIds.some((id) => selected.includes(id))
+                            }
                             checked={selected.includes(d.proposalId)}
                             onChange={(e) =>
                               setSelected(
@@ -882,10 +1157,17 @@ export function App() {
                             {d.operation === 'conflict' ? t('recordConflict') : label(d.operation)}
                           </strong>
                           <span className="pill">
-                            {d.item ? label(d.item.status) : (d.blocked ?? label(d.operation))}
+                            {d.item
+                              ? label(d.item.status)
+                              : d.blockedCode
+                                ? t(d.blockedCode)
+                                : label(d.operation)}
                           </span>
                         </label>
-                        {d.blocked && <p role="alert">{d.blocked}</p>}
+                        {d.blockedCode && <p>{t(d.blockedCode)}</p>}
+                        {d.alternativeIds.length > 0 && (
+                          <p className="alternative-note">{t('chooseAlternative')}</p>
+                        )}
                         {d.before && (
                           <div className="diff-before">
                             <span>{t('before')}</span>
@@ -1031,7 +1313,7 @@ export function App() {
                     </div>
                   </>
                 ) : (
-                  <p role="alert">{handoff && !handoff.ok ? handoff.error : ''}</p>
+                  <p role="alert">{handoff && !handoff.ok ? t(handoff.code) : ''}</p>
                 )}
                 <div className="backup-box">
                   <h2>JSON / {t('history')}</h2>

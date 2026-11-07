@@ -11,6 +11,7 @@ import {
 } from '../core/schema.js';
 import { buildHandoff } from '../export/handoff.js';
 import { assertTransition } from '../core/workflow.js';
+import { WorkflowError } from '../core/errors.js';
 
 const exists = async (path: string) => {
   try {
@@ -63,9 +64,9 @@ export async function withProjectLock<T>(root: string, work: () => Promise<T>): 
     handle = await open(path, 'wx', 0o600);
   } catch (e) {
     if ((e as NodeJS.ErrnoException).code === 'EEXIST')
-      throw new Error(
+      throw new WorkflowError(
+        'project_lock',
         'Project lock exists. Close other writers. If no writer is running, inspect and explicitly remove .threadlatch/write.lock; it is never auto-deleted.',
-        { cause: e },
       );
     throw e;
   }
@@ -139,7 +140,10 @@ export class FileProjectRepository {
       valid.project.generation !== current.project.generation ||
       valid.project.id !== current.project.id
     )
-      throw new Error('Revision conflict. Reload current memory and reanalyze.');
+      throw new WorkflowError(
+        'stale_revision',
+        'Revision conflict. Reload current memory and reanalyze.',
+      );
     assertTransition(current, valid);
     valid.project.generation++;
     await atomicWrite(await safePath(root, '.threadlatch/project.json'), serializeArchive(valid));

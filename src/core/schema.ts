@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { activeProvenanceAllowed } from './provenance.js';
+import { WorkflowError } from './errors.js';
 
 export const id = () => crypto.randomUUID();
 const Id = z
@@ -21,6 +22,7 @@ export const ConversationSchema = z.strictObject({
   id: Id,
   projectId: Id,
   title: z.string().max(300),
+  createdAt: z.iso.datetime().optional(),
   parentRevisionId: Id,
   importFingerprint: Id,
   messages: list(MessageSchema),
@@ -107,7 +109,7 @@ export type ProjectState = ProjectArchive;
 
 export function parseJson(raw: string, maxBytes = 1_048_576): unknown {
   if (new TextEncoder().encode(raw).length > maxBytes)
-    throw new Error('Input size limit exceeded. Select a smaller section.');
+    throw new WorkflowError('input_size', 'Input size limit exceeded. Select a smaller section.');
   let depth = 0,
     quoted = false,
     escaped = false;
@@ -118,13 +120,13 @@ export function parseJson(raw: string, maxBytes = 1_048_576): unknown {
       else if (char === '"') quoted = false;
     } else if (char === '"') quoted = true;
     else if (char === '{' || char === '[') {
-      if (++depth > 30) throw new Error('JSON depth limit exceeded.');
+      if (++depth > 30) throw new WorkflowError('input_size', 'JSON depth limit exceeded.');
     } else if (char === '}' || char === ']') depth--;
   }
   try {
     return JSON.parse(raw);
   } catch {
-    throw new Error('Invalid JSON. Paste one complete JSON object.');
+    throw new WorkflowError('invalid_json', 'Invalid JSON. Paste one complete JSON object.');
   }
 }
 
@@ -158,7 +160,11 @@ export function currentRevision(archive: ProjectArchive): Revision {
 }
 export function parseArchive(raw: string): ProjectArchive {
   const parsed = ArchiveSchema.safeParse(parseJson(raw, 10 * 1_048_576));
-  if (!parsed.success) throw new Error('Invalid archive schema or unsupported schemaVersion.');
+  if (!parsed.success)
+    throw new WorkflowError(
+      'invalid_archive',
+      'Invalid archive schema or unsupported schemaVersion.',
+    );
   const a = parsed.data;
   const check = (ok: unknown) => {
     if (!ok) throw new Error('Invalid archive reference or duplicate identity.');

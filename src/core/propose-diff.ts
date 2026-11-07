@@ -9,6 +9,28 @@ export function proposeDiff(current: Revision, batch: ProposalBatch) {
             (before?.pinned || (before?.origin === 'manual' && change.operation === 'supersede'))
           ? 'Manual review required'
           : null;
-    return { ...change, before, blocked, selectable: !blocked && change.operation !== 'conflict' };
+    const alternativeIds =
+      change.targetItemId && change.operation !== 'conflict'
+        ? batch.changes
+            .filter(
+              (other) =>
+                other.proposalId !== change.proposalId &&
+                other.operation !== 'conflict' &&
+                other.targetItemId === change.targetItemId,
+            )
+            .map((other) => other.proposalId)
+        : [];
+    const selectable = !blocked && change.operation !== 'conflict';
+    const blockedCode: 'requestStale' | 'manualReview' | null =
+      batch.baseRevisionId !== current.id ? 'requestStale' : blocked ? 'manualReview' : null;
+    return {
+      ...change,
+      before,
+      blocked,
+      blockedCode,
+      selectable,
+      alternativeIds,
+      autoSelectable: selectable && alternativeIds.length === 0,
+    };
   });
 }

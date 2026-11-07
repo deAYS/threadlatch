@@ -39,13 +39,11 @@ test('quota failure rolls back; corrupt/dangling-source backups leave current me
     'Keep project memory on this device.',
   );
   await page.getByRole('button', { name: 'Export & handoff', exact: true }).click();
-  await page
-    .getByLabel('Import JSON backup')
-    .setInputFiles({
-      name: 'bad.json',
-      mimeType: 'application/json',
-      buffer: Buffer.from('{broken'),
-    });
+  await page.getByLabel('Import JSON backup').setInputFiles({
+    name: 'bad.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from('{broken'),
+  });
   await expect(page.getByRole('alert')).toContainText('Invalid JSON');
   await page.getByRole('button', { name: 'Current memory', exact: true }).click();
   await expect(page.getByTestId('memory-item')).toHaveCount(3);

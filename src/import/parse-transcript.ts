@@ -1,5 +1,6 @@
 import { id, type Conversation, type Message } from '../core/schema.js';
 import { fingerprint } from './fingerprint.js';
+import { WorkflowError } from '../core/errors.js';
 export type ImportDraft = {
   raw: string;
   format: 'plain' | 'role-tagged';
@@ -7,9 +8,10 @@ export type ImportDraft = {
   warnings: string[];
 };
 export function parseTranscript(input: string, format: ImportDraft['format']): ImportDraft {
-  if (!input.trim()) throw new Error('Empty source. Add a conversation excerpt.');
+  if (!input.trim())
+    throw new WorkflowError('empty_source', 'Empty source. Add a conversation excerpt.');
   if (new TextEncoder().encode(input).length > 1_048_576)
-    throw new Error('Source size exceeds 1 MiB. Select a smaller section.');
+    throw new WorkflowError('source_size', 'Source size exceeds 1 MiB. Select a smaller section.');
   const draft: ImportDraft = { raw: input, format, messages: [], warnings: [] };
   if (format === 'plain') draft.messages.push({ role: 'unknown', text: input });
   else {
@@ -55,6 +57,7 @@ export async function finalizeImport(
     projectId,
     parentRevisionId: baseRevisionId,
     title: 'Conversation',
+    createdAt: new Date().toISOString(),
     importFingerprint: await fingerprint(projectId, baseRevisionId, draft.messages),
     messages: draft.messages.map((m, ordinal) => ({ ...m, id: id(), conversationId, ordinal })),
   };

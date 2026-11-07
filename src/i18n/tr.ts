@@ -1,5 +1,68 @@
 import { type en } from './en.js';
 export const tr: Record<keyof typeof en, string> = {
+  handoff_budget:
+    'Zorunlu bellek aktarım sınırını aşıyor. Aktarım kapsamını daralt veya 24.000 karakteri seç; hiçbir içerik sessizce çıkarılmadı.',
+  manualReview: 'Sabitlenmiş veya elle düzenlenmiş madde. Güncel belleği elle inceleyip düzelt.',
+  requestWaiting: 'Yanıt bekliyor',
+  requestReady: 'İncelemeye hazır',
+  requestPartial: 'Kısmen uygulandı',
+  requestApplied: 'Uygulandı',
+  requestStale: 'Yeniden analiz gerekiyor',
+  partialHelp: 'Seçilmeyen değişiklikler geçmişte durur.',
+  reanalysisHelp:
+    'Kalan değişiklikleri kaydetmeden önce aynı kaynağı güncel belleğe karşı yeniden analiz et.',
+  scopeHelp:
+    'Kapsam değişiklikleri sonraki hazırlanan isteği etkiler. Kaydedilmiş bu istek değişmez.',
+  selectHelp:
+    'Otomatik seçim, birbiriyle yarışan alternatifleri atlar. Kaydetmeden önce anlamı ve kaynakları incele.',
+  selectedCount: 'seçili',
+  searchMemory: 'Bellekte ara',
+  filterStatus: 'Duruma göre filtrele',
+  filterKind: 'Türe göre filtrele',
+  all: 'Tümü',
+  visibleCount: 'madde gösteriliyor',
+  noMatches: 'Bu filtrelere uyan bellek maddesi yok.',
+  clearFilters: 'Filtreleri temizle',
+  sourceTitle: 'Kaynak başlığı (isteğe bağlı)',
+  stepSource: 'Kaynağı seç',
+  stepRequest: 'İsteği kullandığın AI’a ver',
+  stepReply: 'Yanıtını getir',
+  stepSave: 'İncele ve kaydet',
+  stepsLabel: 'Analiz adımları',
+  copyRequest: 'AI için isteği kopyala',
+  requestDetails: 'İstek metni ve teknik ayrıntılar',
+  requestCopied: 'İstek kopyalandı. AI’a ver, sonra yanıtını aşağıya yapıştır.',
+  historicalHelp:
+    'Geçmiş madde. Özgün durumunu ve kaynaklarını burada incele; güncel belleği değiştirmek için yeni bir düzeltme yap veya bir sürümü geri yükle.',
+  historicalView: 'Geçmişi incele',
+  unknownRoles:
+    'Bazı konuşmacılar belirsiz. Biliniyorsa rol ata; belirsiz ifadeler onaylanmış kararlara dönüşmez.',
+  technicalDetails: 'Teknik ayrıntılar',
+  fixReply: 'Yanıta dön',
+  reviewSource: 'Kaynağa dön',
+  invalid_json: 'Geçersiz JSON. Yanıtın tamamını tekrar yapıştır; mevcut yanıtın korunuyor.',
+  invalid_proposal:
+    'Yanıt bu istekle uyuşmuyor. AI’dan özgün isteği ve birebir kaynak alıntılarını kullanarak yanıtı düzeltmesini iste.',
+  invalid_archive:
+    'Bu yedek desteklenen bir arşiv değil. Eksiksiz bir ThreadLatch JSON yedeği seç.',
+  source_size: 'Kaynak 1 MiB sınırını aşıyor. Daha küçük bir bölüm seç; taslağın korunuyor.',
+  analysis_size:
+    'İstek 24.000 karakteri aşıyor. Daha az kaynak mesajı seç veya bellek kapsamını daralt; hiçbir metin kesilmedi.',
+  input_size:
+    'Girdi boyut veya derinlik sınırını aşıyor. Daha küçük, eksiksiz bir dosya veya yanıt kullan.',
+  empty_source: 'Önizlemeden önce bir konuşma bölümü ekle.',
+  stale_revision:
+    'Bellek değişti veya analiz eski kaldı. Güncel belleği yeniden yükle, sonra yeni bir analiz hazırla. Taslakların korunuyor.',
+  project_lock:
+    'Başka bir işlem proje kilidini tutuyor. Diğer yazıcıları kapat; kilidi ancak inceleyip açıkça kaldır.',
+  quota:
+    'Cihazın depolama alanı dolu. JSON yedeğini indir, yer aç ve tekrar dene. Taslağın korunuyor.',
+  invalid_scope:
+    'Seçilen bazı bellek maddeleri artık güncel değil. Kapsamı inceleyip yeni bir analiz hazırla.',
+  operation_failed:
+    'İşlem başarısız oldu. Taslakların korunuyor. Ayrıntıları inceleyip sorunu giderdikten sonra tekrar dene.',
+  chooseAlternative:
+    'Aynı bellek maddesi için alternatifler. Birlikte inceleyip birini seç; değiştirmeden önce seçimini kaldır.',
   language: 'Dil',
   memory: 'Güncel bellek',
   review: 'Değişiklikleri incele',
@@ -31,7 +94,7 @@ export const tr: Record<keyof typeof en, string> = {
   pending: 'Bekleyen istek',
   copy: 'Metni kopyala',
   copied: 'Kopyalandı',
-  selectSafe: 'Güvenli değişiklikleri seç',
+  selectSafe: 'Yarışmayan değişiklikleri seç',
   save: 'Seçili değişiklikleri kaydet',
   sourceMatched: 'Kaynak eşleşti · anlamı incele',
   before: 'Önce',

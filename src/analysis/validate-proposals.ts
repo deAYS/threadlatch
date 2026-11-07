@@ -5,13 +5,14 @@ import {
   type ProposalBatch,
 } from '../core/schema.js';
 import { clearUserStatement, activeProvenanceAllowed } from '../core/provenance.js';
+import { errorCode, type ErrorCode } from '../core/errors.js';
 export type ValidationResult =
   | {
       ok: true;
       batch: ProposalBatch;
       matches: Array<{ messageId: string; quote: string; positions: number[] }>;
     }
-  | { ok: false; errors: string[] };
+  | { ok: false; errors: string[]; code: ErrorCode };
 export function validateProposalBatch(raw: string, request: AnalysisRequest): ValidationResult {
   try {
     let input = raw.trim();
@@ -91,6 +92,10 @@ export function validateProposalBatch(raw: string, request: AnalysisRequest): Va
     }
     return { ok: true, batch, matches };
   } catch (e) {
-    return { ok: false, errors: [e instanceof Error ? e.message : 'Invalid analysis.'] };
+    return {
+      ok: false,
+      errors: [e instanceof Error ? e.message : 'Invalid analysis.'],
+      code: errorCode(e) === 'operation_failed' ? 'invalid_proposal' : errorCode(e),
+    };
   }
 }

@@ -1,7 +1,7 @@
 import { type Revision } from '../core/schema.js';
 export type HandoffResult =
   | { ok: true; text: string; includedItemIds: string[]; omittedItemIds: string[] }
-  | { ok: false; error: string };
+  | { ok: false; error: string; code: 'invalid_scope' | 'handoff_budget' };
 const escape = (text: string) =>
   text
     .replace(/&/g, '&amp;')
@@ -30,7 +30,7 @@ export function buildHandoff(
     (new Set(options.itemIds).size !== options.itemIds.length ||
       options.itemIds.some((mid) => !actionable.some((i) => i.id === mid)))
   )
-    return { ok: false, error: 'Unknown or duplicate handoff scope.' };
+    return { ok: false, error: 'Unknown or duplicate handoff scope.', code: 'invalid_scope' };
   omittedItemIds.push(
     ...actionable
       .filter((i) => options.itemIds && !options.itemIds.includes(i.id))
@@ -62,6 +62,7 @@ export function buildHandoff(
   if (Array.from(text).length + footerBudget > options.maxCodePoints)
     return {
       ok: false,
+      code: 'handoff_budget',
       error:
         'Mandatory memory exceeds the handoff budget. Narrow the scope or choose 24,000 code points.',
     };

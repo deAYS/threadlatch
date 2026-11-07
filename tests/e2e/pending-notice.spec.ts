@@ -13,7 +13,7 @@ for (const ui of [
     request: 'Analysis request',
     result: 'Analysis result',
     validate: 'Validate result',
-    select: 'Select safe changes',
+    select: 'Select noncompeting changes',
     save: 'Save selected changes',
     pending: 'Analysis saved for review. Apply selected changes to update memory.',
     saved: 'Saved a new revision.',
@@ -30,7 +30,7 @@ for (const ui of [
     request: 'Analiz isteği',
     result: 'Analiz sonucu',
     validate: 'Sonucu doğrula',
-    select: 'Güvenli değişiklikleri seç',
+    select: 'Yarışmayan değişiklikleri seç',
     save: 'Seçili değişiklikleri kaydet',
     pending:
       'Analiz inceleme için kaydedildi. Belleği güncellemek için seçili değişiklikleri uygula.',

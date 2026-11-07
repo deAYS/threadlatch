@@ -1,5 +1,6 @@
 import { currentRevision, id, type AnalysisRequest, type ProjectState } from '../core/schema.js';
 import { buildAnalysisPrompt } from './prompt.js';
+import { WorkflowError } from '../core/errors.js';
 export function createAnalysisRequest(
   project: ProjectState,
   messageIds: string[],
@@ -20,7 +21,10 @@ export function createAnalysisRequest(
     (new Set(itemIds).size !== itemIds.length ||
       itemIds.some((mid) => !actionable.some((i) => i.id === mid)))
   )
-    throw new Error('Unknown or duplicate memory scope. Select current item IDs.');
+    throw new WorkflowError(
+      'invalid_scope',
+      'Unknown or duplicate memory scope. Select current item IDs.',
+    );
   const currentItems = actionable.filter((i) => !itemIds || itemIds.includes(i.id));
   const req: AnalysisRequest = {
     schemaVersion: 1,
@@ -41,7 +45,8 @@ export function createAnalysisRequest(
     proposalIds: Array.from({ length: 32 }, id),
   };
   if (Array.from(buildAnalysisPrompt(req)).length > 24_000)
-    throw new Error(
+    throw new WorkflowError(
+      'analysis_size',
       'Analysis size exceeds 24,000 code points. Select fewer source messages or a narrower memory scope; nothing was truncated.',
     );
   return req;
